@@ -1,0 +1,1 @@
+Hello, I'm Deniz. I develop apps to help people.
