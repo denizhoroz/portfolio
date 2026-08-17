@@ -1,5 +1,10 @@
 use dioxus::{html::{a::href, h1, img}, prelude::*};
 
+mod components;
+use components::*;
+mod data;
+use data::*;
+
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
 enum Route {
@@ -8,17 +13,17 @@ enum Route {
     #[route("/")]
     Home {},
 
-    // #[route("/blog/:id")]
-    // Blog { id: i32 },
+    #[route("/works")]
+    MyWorksPage {},
+
+    #[route("/works/:slug")]
+    WorkPage { slug: String }
 }
 
 // Import assets
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/main.css");
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
-const IMG_PR1: Asset = asset!("/assets/img/project-img1.png");
-const IMG_PR2: Asset = asset!("/assets/img/project-img2.png");
-const IMG_PR3: Asset = asset!("/assets/img/project-img3.png");
 const GITHUB_ICON: Asset = asset!("/assets/icons/github.svg");
 const LINKEDIN_ICON: Asset = asset!("/assets/icons/linkedin.svg");
 const X_ICON: Asset = asset!("/assets/icons/x.svg");
@@ -47,12 +52,18 @@ fn App() -> Element {
 #[component]
 fn Home() -> Element {
     rsx! {
+        div {style: "padding: 150px;"}
+
         div {
-            style: "display: flex; flex-direction: column;",
+            style: "display: flex; flex-direction: column; gap: 400px;",
             Hero {}
             AboutMe {}
             MyWorks {}
-            ReachMe {}
+            ReachMe {}   
+        }
+        
+        div {
+            div { style: "padding-top: 300px;" }
             Footer {}
         }
     }
@@ -122,41 +133,24 @@ pub fn MyWorks() -> Element {
                 }
                 div {
                     class: "project-container",
-                    
-                    a {
-                        href: "_blank",
-                        {ProjectBox(ProjectBoxProps { 
-                            title: ("Laser Turret Project".to_string()), 
-                            description: ("An affordable, fully autonomous laser turret that detects, tracks, and fires at targets using AI-based image processing. Built as a Mechatronics Engineering graduation project at Istanbul Ticaret University.".to_string()), 
-                            image: (IMG_PR1), 
-                            link: (None) 
-                        })}
-                    }
-                    a {
-                        href: "_blank",
-                        {ProjectBox(ProjectBoxProps { 
-                            title: ("Interloper - Language Learning Platform".to_string()), 
-                            description: ("A language learning platform which you can practice in with simulated environments.".to_string()), 
-                            image: (IMG_PR2), 
-                            link: (None) 
-                        })}
-                    }
-                    a {
-                        href: "_blank",
-                        {ProjectBox(ProjectBoxProps { 
-                            title: ("Journal Lite".to_string()), 
-                            description: ("A lightweight Python journaling application designed to be fast, simple, and focused on daily entries with useful productivity features.".to_string()), 
-                            image: (IMG_PR3), 
-                            link: (None) 
-                        })}
+
+
+                    for p in projects().iter().take(3) {
+                        Link {
+                            to: Route::WorkPage { slug: p.slug.clone() },
+                            key: "{p.slug}",
+                            { ProjectBox(ProjectBoxProps { ..p.clone() }) }
+                        }
                     }
                 }
 
                 a {
                     class: "block-desc button",
-                    href: "_blank",
-                    "see all projects"
+                    href: Route::MyWorksPage {}.to_string(),
+                    "see my other works"
                 }
+
+
             }
         }
     }
@@ -235,15 +229,6 @@ pub fn Footer() -> Element {
     }
 }
 
-// Project Box Props
-#[derive(Props, Clone, PartialEq)]
-pub struct ProjectBoxProps {
-    title: String,
-    description: String,
-    image: Asset,
-    link: Option<String>,
-}
-
 
 // Small Project Box
 #[component]
@@ -262,36 +247,21 @@ pub fn ProjectBox(props: ProjectBoxProps) -> Element {
                 style: "font-size: 24px; font-weight: bold",
                 "{props.title}" 
             }
-            p { "{props.description}" }
+
+            p { 
+                "{props.description}" 
+            }
+
+            div {
+                class: "tech-list",
+                for t in props.tech.iter() {
+                    span { class: "tech-tag", key: "{t}", "{t}" }
+                }
+            }
         }
     }
 }
 
-
-// /// Blog page
-// #[component]
-// pub fn Blog(id: i32) -> Element {
-//     rsx! {
-//         div {
-//             id: "blog",
-
-//             // Content
-//             h1 { "This is blog #{id}!" }
-//             p { "In blog #{id}, we show how the Dioxus router works and how URL parameters can be passed as props to our route components." }
-
-//             // Navigation links
-//             Link {
-//                 to: Route::Blog { id: id - 1 },
-//                 "Previous"
-//             }
-//             span { " <---> " }
-//             Link {
-//                 to: Route::Blog { id: id + 1 },
-//                 "Next"
-//             }
-//         }
-//     }
-// }
 
 // Shared navbar component.
 #[component]
@@ -307,45 +277,12 @@ fn Navbar() -> Element {
 
             div {
                 id: "navbar",
-                a { href: "#hero", "home" }
-                a { href: "#aboutme", "who am i?" }
-                a { href: "#myworks", "my works" }
-                a { href: "#reachme", "reach me" }
+                Link { to: Route::Home {}, "home" }
+                a { href: "/#aboutme", "who am i?" }
+                Link { to: Route::MyWorksPage {}, "my works" }
+                a { href: "/#reachme", "reach me" }
             }
         }
         Outlet::<Route> {}
     }
 }
-
-// /// Echo component that demonstrates fullstack server functions.
-// #[component]
-// fn Echo() -> Element {
-//     let mut response = use_signal(|| String::new());
-
-//     rsx! {
-//         div {
-//             id: "echo",
-//             h4 { "ServerFn Echo" }
-//             input {
-//                 placeholder: "Type here to echo...",
-//                 oninput:  move |event| async move {
-//                     let data = echo_server(event.value()).await.unwrap();
-//                     response.set(data);
-//                 },
-//             }
-
-//             if !response().is_empty() {
-//                 p {
-//                     "Server echoed: "
-//                     i { "{response}" }
-//                 }
-//             }
-//         }
-//     }
-// }
-
-// Echo the user input on the server.
-// #[post("/api/echo")]
-// async fn echo_server(input: String) -> Result<String, ServerFnError> {
-//     Ok(input)
-// }
