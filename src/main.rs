@@ -1,4 +1,4 @@
-use dioxus::{html::{a::href, img}, prelude::*};
+use dioxus::{html::{a::href, h1, img}, prelude::*};
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -15,7 +15,6 @@ enum Route {
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/main.css");
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
-const TEXT_WHOAMI: &str = include_str!("../assets/texts/whoami.md");
 const IMG_PR1: Asset = asset!("/assets/img/project-img1.png");
 const IMG_PR2: Asset = asset!("/assets/img/project-img2.png");
 const IMG_PR3: Asset = asset!("/assets/img/project-img3.png");
@@ -29,6 +28,13 @@ fn App() -> Element {
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: MAIN_CSS } document::Link { rel: "stylesheet", href: TAILWIND_CSS }
+        document::Link { rel: "preconnect", href: "https://fonts.googleapis.com" }
+        document::Link { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "anonymous" }
+        document::Link {
+            rel: "stylesheet",
+            href: "https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap"
+        }
+
         Router::<Route> {}
     }
 }
@@ -83,9 +89,13 @@ pub fn AboutMe() -> Element {
                     class: "block-title",
                     "who am i?"
                 }
-                h1 {
+                h3 {
                     class: "block-desc",
-                    {TEXT_WHOAMI}
+                    "Hello, I'm Deniz. I develop helpful apps to solve people's problems."
+                }
+                h3 {
+                    class: "block-desc",
+                    "I've always wanted to learn more about technology and since I've started my engineering journey in 2022, I am constantly trying to learn new things and apply the things I've learned by making new projects."
                 }
             }
         }
@@ -115,6 +125,21 @@ pub fn MyWorks() -> Element {
                         link: (None) 
                     })}
 
+                    {ProjectBox(ProjectBoxProps { 
+                        title: ("Interloper - Language Learning Platform".to_string()), 
+                        description: ("A language learning platform which you can practice in with simulated environments.".to_string()), 
+                        image: (IMG_PR2), 
+                        link: (None) 
+                    })}
+
+                    {ProjectBox(ProjectBoxProps { 
+                        title: ("Journal Lite".to_string()), 
+                        description: ("A lightweight Python journaling application designed to be fast, simple, and focused on daily entries with useful productivity features.".to_string()), 
+                        image: (IMG_PR3), 
+                        link: (None) 
+                    })}
+
+
                 }
 
                 a {
@@ -134,9 +159,42 @@ pub fn FollowMe() -> Element {
         div {
             id: "followme",
             class: "page-block",
-            h1 {
-                class: "block-title",
-                "reach me"
+            div {
+                style: "display: flex; flex-direction: column; gap: 50px",
+                
+                h1 {
+                    class: "block-title",
+                    "reach me"
+                }
+                div {
+                    style: "display: flex; flex-direction: row; gap: 100px",
+                    div {
+                        style: "display: flex; flex-direction: column; gap: 20px;",
+                        h1 { 
+                            class: "block-subtitle",
+                            "my email"
+                        }
+                        p {
+                            "denizhoroz.ofcl@gmail.com"
+                        }
+                    }
+                    div {
+                        style: "display: flex; flex-direction: column; gap: 20px;",
+                        h1 {
+                            class: "block-subtitle",
+                            "my socials"
+                        }
+                        a {
+                            "github"
+                        }
+                        a {
+                            "linkedin"
+                        }
+                        a {
+                            "x"
+                        }
+                    }
+                }
             }
         }
     }
@@ -161,8 +219,15 @@ pub fn ProjectBox(props: ProjectBoxProps) -> Element {
         div {
             class: "projectbox",
 
-            img { src: props.image }
-            h3 { "{props.title}" }
+            img { 
+                style: "height: 200px; object-fit: cover;",
+                src: props.image 
+            }
+            
+            h3 { 
+                style: "font-size: 24px; font-weight: bold",
+                "{props.title}" 
+            }
             p { "{props.description}" }
         }
     }
