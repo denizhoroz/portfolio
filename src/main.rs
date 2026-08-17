@@ -3,7 +3,8 @@ use dioxus::{html::{a::href, h1, img}, prelude::*};
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
 enum Route {
-    // #[layout(Navbar)]
+    #[layout(Navbar)]
+
     #[route("/")]
     Home {},
 
@@ -18,6 +19,9 @@ const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
 const IMG_PR1: Asset = asset!("/assets/img/project-img1.png");
 const IMG_PR2: Asset = asset!("/assets/img/project-img2.png");
 const IMG_PR3: Asset = asset!("/assets/img/project-img3.png");
+const GITHUB_ICON: Asset = asset!("/assets/icons/github.svg");
+const LINKEDIN_ICON: Asset = asset!("/assets/icons/linkedin.svg");
+const X_ICON: Asset = asset!("/assets/icons/x.svg");
 
 fn main() {
     dioxus::launch(App);
@@ -44,11 +48,12 @@ fn App() -> Element {
 fn Home() -> Element {
     rsx! {
         div {
-            style: "display: flex; flex-direction: column; gap: 300px;",
+            style: "display: flex; flex-direction: column;",
             Hero {}
             AboutMe {}
             MyWorks {}
-            FollowMe {}
+            ReachMe {}
+            Footer {}
         }
     }
 }
@@ -117,33 +122,39 @@ pub fn MyWorks() -> Element {
                 }
                 div {
                     class: "project-container",
- 
-                    {ProjectBox(ProjectBoxProps { 
-                        title: ("Laser Turret Project".to_string()), 
-                        description: ("An affordable, fully autonomous laser turret that detects, tracks, and fires at targets using AI-based image processing. Built as a Mechatronics Engineering graduation project at Istanbul Ticaret University.".to_string()), 
-                        image: (IMG_PR1), 
-                        link: (None) 
-                    })}
-
-                    {ProjectBox(ProjectBoxProps { 
-                        title: ("Interloper - Language Learning Platform".to_string()), 
-                        description: ("A language learning platform which you can practice in with simulated environments.".to_string()), 
-                        image: (IMG_PR2), 
-                        link: (None) 
-                    })}
-
-                    {ProjectBox(ProjectBoxProps { 
-                        title: ("Journal Lite".to_string()), 
-                        description: ("A lightweight Python journaling application designed to be fast, simple, and focused on daily entries with useful productivity features.".to_string()), 
-                        image: (IMG_PR3), 
-                        link: (None) 
-                    })}
-
-
+                    
+                    a {
+                        href: "_blank",
+                        {ProjectBox(ProjectBoxProps { 
+                            title: ("Laser Turret Project".to_string()), 
+                            description: ("An affordable, fully autonomous laser turret that detects, tracks, and fires at targets using AI-based image processing. Built as a Mechatronics Engineering graduation project at Istanbul Ticaret University.".to_string()), 
+                            image: (IMG_PR1), 
+                            link: (None) 
+                        })}
+                    }
+                    a {
+                        href: "_blank",
+                        {ProjectBox(ProjectBoxProps { 
+                            title: ("Interloper - Language Learning Platform".to_string()), 
+                            description: ("A language learning platform which you can practice in with simulated environments.".to_string()), 
+                            image: (IMG_PR2), 
+                            link: (None) 
+                        })}
+                    }
+                    a {
+                        href: "_blank",
+                        {ProjectBox(ProjectBoxProps { 
+                            title: ("Journal Lite".to_string()), 
+                            description: ("A lightweight Python journaling application designed to be fast, simple, and focused on daily entries with useful productivity features.".to_string()), 
+                            image: (IMG_PR3), 
+                            link: (None) 
+                        })}
+                    }
                 }
 
                 a {
-                    class: "block-desc",
+                    class: "block-desc button",
+                    href: "_blank",
                     "see all projects"
                 }
             }
@@ -152,12 +163,12 @@ pub fn MyWorks() -> Element {
 }
 
 
-// FollowMe section
+// ReachMe section
 #[component]
-pub fn FollowMe() -> Element {
+pub fn ReachMe() -> Element {
     rsx! {
         div {
-            id: "followme",
+            id: "reachme",
             class: "page-block",
             div {
                 style: "display: flex; flex-direction: column; gap: 50px",
@@ -167,14 +178,15 @@ pub fn FollowMe() -> Element {
                     "reach me"
                 }
                 div {
-                    style: "display: flex; flex-direction: row; gap: 100px",
+                    style: "display: flex; flex-direction: row; gap: 200px",
                     div {
                         style: "display: flex; flex-direction: column; gap: 20px;",
                         h1 { 
                             class: "block-subtitle",
                             "my email"
                         }
-                        p {
+                        a {
+                            class: "social-anchor",
                             "denizhoroz.ofcl@gmail.com"
                         }
                     }
@@ -185,13 +197,25 @@ pub fn FollowMe() -> Element {
                             "my socials"
                         }
                         a {
+                            class: "social-anchor button",
+                            href: "https://github.com/denizhoroz",
+                            target: "_blank",
+                            img { style: "width: 40px", src: GITHUB_ICON, alt: "GitHub", class: "social-icon"} 
                             "github"
                         }
                         a {
+                            class: "social-anchor button",
+                            href: "https://www.linkedin.com/in/denizhoroz",
+                            target: "_blank",
+                            img { style: "width: 40px", src: LINKEDIN_ICON, alt: "LinkedIn", class: "social-icon"} 
                             "linkedin"
                         }
                         a {
-                            "x"
+                            class: "social-anchor button",
+                            href: "https://x.com/denizerenhoroz",
+                            target: "_blank",
+                            img { style: "width: 40px", src: X_ICON, alt: "X", class: "social-icon"} 
+                            "X"
                         }
                     }
                 }
@@ -200,7 +224,16 @@ pub fn FollowMe() -> Element {
     }
 } 
 
-
+// Footer section
+#[component]
+pub fn Footer() -> Element {
+    rsx! {
+        div {
+            style: "margin: auto; justify-content: center; align-items: center; text-align: center;",
+            "denizhoroz - 2026"
+        }
+    }
+}
 
 // Project Box Props
 #[derive(Props, Clone, PartialEq)]
@@ -220,6 +253,7 @@ pub fn ProjectBox(props: ProjectBoxProps) -> Element {
             class: "projectbox",
 
             img { 
+                class: "image-portrait",
                 style: "height: 200px; object-fit: cover;",
                 src: props.image 
             }
@@ -260,24 +294,28 @@ pub fn ProjectBox(props: ProjectBoxProps) -> Element {
 // }
 
 // Shared navbar component.
-// #[component]
-// fn Navbar() -> Element {
-//     rsx! {
-//         div {
-//             id: "navbar",
-//             Link {
-//                 to: Route::Home {},
-//                 "Home"
-//             }
-//             Link {
-//                 to: Route::Blog { id: 1 },
-//                 "Blog"
-//             }
-//         }
+#[component]
+fn Navbar() -> Element {
+    rsx! {
+        div {
+            class: "navbar-container",
+        
+            div {
+                class: "navbar-title",
+                h1 { "denizhoroz" }
+            }
 
-//         Outlet::<Route> {}
-//     }
-// }
+            div {
+                id: "navbar",
+                a { href: "#hero", "home" }
+                a { href: "#aboutme", "who am i?" }
+                a { href: "#myworks", "my works" }
+                a { href: "#reachme", "reach me" }
+            }
+        }
+        Outlet::<Route> {}
+    }
+}
 
 // /// Echo component that demonstrates fullstack server functions.
 // #[component]
