@@ -1,8 +1,6 @@
 [application]
 
 [web.app]
-out_dir = "docs"
-base_path = "portfolio"
 
 # HTML title tag content
 title = "portfolio"
