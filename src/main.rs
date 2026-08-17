@@ -144,12 +144,7 @@ pub fn MyWorks() -> Element {
                     }
                 }
 
-                a {
-                    class: "block-desc button",
-                    href: Route::MyWorksPage {}.to_string(),
-                    "see my other works"
-                }
-
+                Link { class: "block-desc button", to: Route::MyWorksPage {},  "see my other works" }
 
             }
         }
