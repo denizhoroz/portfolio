@@ -1,6 +1,8 @@
 [application]
 
 [web.app]
+out_dir = "docs" 
+
 base_path = "https://github.com/denizhoroz/portfolio"
 
 # HTML title tag content
