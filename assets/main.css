@@ -81,6 +81,9 @@ body {
 }
 
 .button {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
     padding: 10px;
     border: 1px solid #8D493A;
     border-radius: 8px;
@@ -104,6 +107,10 @@ body {
     padding: 4px 10px;
     border: 1px solid #8D493A;
     border-radius: 999px;
+}
+
+#work-page {
+    gap: 32px;
 }
 
 #links {
