@@ -2,10 +2,9 @@ use dioxus::prelude::*;
 
 use crate::data::{Project, asset_for};
 
-// Small Project Box
-// The props type is no longer the data model. `Project` has to be able to come
-// off a wire later and `Asset` cannot, so the asset is resolved here, at render
-// time, from the row's `image_key`.
+// The props type is deliberately not the data model: `Project` must be able to
+// arrive from a database and `Asset` cannot, so the asset is resolved here at
+// render time from `image_key`.
 #[derive(Props, Clone, PartialEq)]
 pub struct ProjectBoxProps {
     pub project: Project,

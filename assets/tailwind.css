@@ -8,7 +8,6 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
     --spacing: 0.25rem;
-    --container-3xl: 48rem;
     --text-xs: 0.75rem;
     --text-xs--line-height: calc(1 / 0.75);
     --text-sm: 0.875rem;
@@ -191,9 +190,6 @@
   }
 }
 @layer utilities {
-  .visible {
-    visibility: visible;
-  }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -244,6 +240,9 @@
   .block {
     display: block;
   }
+  .contents {
+    display: contents;
+  }
   .flex {
     display: flex;
   }
@@ -267,9 +266,6 @@
   }
   .h-10 {
     height: calc(var(--spacing) * 10);
-  }
-  .min-h-\[26rem\] {
-    min-height: 26rem;
   }
   .min-h-\[var\(--bar-height\)\] {
     min-height: var(--bar-height);
@@ -301,9 +297,6 @@
   .w-full {
     width: 100%;
   }
-  .max-w-3xl {
-    max-width: var(--container-3xl);
-  }
   .max-w-full {
     max-width: 100%;
   }
@@ -315,6 +308,9 @@
   }
   .items-center {
     align-items: center;
+  }
+  .justify-between {
+    justify-content: space-between;
   }
   .justify-center {
     justify-content: center;
@@ -338,15 +334,8 @@
     border-top-style: var(--tw-border-style);
     border-top-width: 1px;
   }
-  .border-b {
-    border-bottom-style: var(--tw-border-style);
-    border-bottom-width: 1px;
-  }
   .border-edge {
     border-color: var(--color-edge);
-  }
-  .py-8 {
-    padding-block: calc(var(--spacing) * 8);
   }
   .pt-\[clamp\(4rem\,12vw\,10rem\)\] {
     padding-top: clamp(4rem, 12vw, 10rem);
@@ -361,10 +350,6 @@
   .text-lg {
     font-size: var(--text-lg);
     line-height: var(--tw-leading, var(--text-lg--line-height));
-  }
-  .text-sm {
-    font-size: var(--text-sm);
-    line-height: var(--tw-leading, var(--text-sm--line-height));
   }
   .text-xl {
     font-size: var(--text-xl);
@@ -401,11 +386,6 @@
     @media (width >= 40rem) {
       font-size: var(--text-2xl);
       line-height: var(--tw-leading, var(--text-2xl--line-height));
-    }
-  }
-  .lg\:pt-60 {
-    @media (width >= 64rem) {
-      padding-top: calc(var(--spacing) * 60);
     }
   }
 }
@@ -587,9 +567,6 @@
     padding-inline: calc(var(--spacing) * 2.5);
     padding-block: calc(var(--spacing) * 1);
     font-size: 0.8125rem;
-  }
-  #work-page {
-    gap: calc(var(--spacing) * 8);
   }
   .navbar-title {
     display: none;

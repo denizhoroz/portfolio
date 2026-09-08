@@ -1,22 +1,15 @@
-use super::{DataError, Project};
+use super::Project;
 
-// The hardcoded source. Transferred verbatim from the old `projects.rs`: same
-// six projects, same slugs, same copy, same order -- `position` just makes that
-// order explicit instead of an accident of the `vec!` literal, and `image_key`
-// replaces the `Asset` that could not live in the model.
-//
-// Both functions are `async` and return `Result` despite never awaiting or
-// failing. That is the point: the call sites are already shaped for a real
-// source, so swapping one in is not a UI change.
+// The hardcoded source, standing in until a database replaces it.
 
-pub async fn all() -> Result<Vec<Project>, DataError> {
+pub async fn all() -> Vec<Project> {
     let mut list = projects();
     list.sort_by_key(|p| p.position);
-    Ok(list)
+    list
 }
 
-pub async fn by_slug(slug: &str) -> Result<Option<Project>, DataError> {
-    Ok(projects().into_iter().find(|p| p.slug == slug))
+pub async fn by_slug(slug: &str) -> Option<Project> {
+    projects().into_iter().find(|p| p.slug == slug)
 }
 
 fn projects() -> Vec<Project> {

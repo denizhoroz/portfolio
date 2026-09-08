@@ -2,19 +2,15 @@ use dioxus::prelude::*;
 
 use crate::{AboutMe, Footer, Hero, MyWorks, ReachMe};
 
-/// Home page.
-///
-/// Nothing but composition -- each section owns its own file, so this is the
-/// place to reorder them or drop one in, and nowhere else needs to change.
+/// Home page -- composition only; each section owns its own file.
 #[component]
 pub fn Home() -> Element {
     rsx! {
         document::Title { "denizhoroz" }
 
-        // No gap and no top padding: every child is a full-height .page-section,
-        // so the rhythm comes from the section height itself. A gap here would
-        // show a strip of the next section at the bottom of each screen, and top
-        // padding would push #hero past one screen.
+        // No gap or top padding: every child is a full-height .page-section, so
+        // the section height IS the rhythm. A gap would show a strip of the next
+        // section at the bottom of each screen.
         div {
             class: "flex flex-col",
             Hero {}

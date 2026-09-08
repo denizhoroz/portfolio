@@ -1,67 +1,36 @@
 /* Document-level base styles only.
-   ---------------------------------------------------------------------------
-   Every component class that used to live here (.page-block, .projectbox,
-   .button, .navbar-container, #navbar, ...) has been transferred into
-   ../tailwind.css under @layer components, where it is expressed with @apply
-   against the design tokens in @theme.
 
-   Verbatim reference copy of this file before the migration: ../main.css.backup
-
-   Why the component rules had to leave this file: CSS here is unlayered, and
-   unlayered CSS beats every layered Tailwind utility regardless of source
-   order. Leaving `.projectbox { width: 400px }` here would silently override a
-   `w-full` utility in the rsx. Base element styles below are safe to keep
-   unlayered because no utility targets html/body directly.
-   --------------------------------------------------------------------------- */
+   Component classes live in ../tailwind.css under @layer components. CSS here
+   is unlayered, and unlayered CSS beats every layered Tailwind utility
+   regardless of source order -- a `.projectbox { width: 400px }` here would
+   silently override a `w-full` in the rsx. html/body are safe to keep unlayered
+   because no utility targets them. */
 
 :root {
-    /* Vertical space the fixed navbar occupies. It is a full-width top bar at
-       every width -- there is no longer a left-rail variant, so this value is
-       unconditional. Three things need this number -- body padding, section
-       height and scroll-padding -- so it lives here instead of being written
-       out three times and drifting.
-
-       The rendered bar must stay within this budget or content slides under it.
-       Measured: 44px link (min-h-11) + 16px container py-2 = ~60px of 72px. */
+    /* Vertical space the fixed navbar occupies. Body padding, section height
+       and scroll-padding all need this number, so it lives here rather than
+       being written out three times and drifting. */
     --nav-clearance: 4.5rem;
 
-    /* Content height of the navbar -- and of the footer, which is the same bar
-       at the other end of the page. 44px (the link touch target) + 16px.
-       Both .navbar-inner and the footer read this, so the two cannot drift apart.
-       --nav-clearance must stay >= this plus the 1px rule, or content slides
-       under the fixed bar: 60 + 1 = 61 against 72. */
+    /* Content height of the navbar, and of the footer -- the same bar at the
+       other end of the page. Both read this, so the two cannot drift apart.
+       Must stay <= --nav-clearance minus the 1px rule, or content slides under
+       the fixed bar: 60 + 1 = 61 against 72. */
     --bar-height: 3.75rem;
 
-    /* Light is the default, so the light values stay where they are: in
-       tailwind.css's @theme. Only the dark overrides live here. */
     color-scheme: light;
 }
 
-/* Dark palette.
-   ---------------------------------------------------------------------------
-   Supplied as text / background / primary / secondary / accent, mapped onto the
-   same roles the light palette uses. Two differences from light:
+/* Dark palette. Light lives in tailwind.css's @theme; only the overrides are
+   here. This selector is (0,2,0) against @theme's (0,1,0) `:root`, so it wins
+   on specificity and does not depend on source or layer order.
 
-     --color-edge is the accent itself. In light mode #be9241 on the page is
-     2.66:1 and had to be darkened to #9a7433 to clear 3:1 for borders. On this
-     dark background the same #be9241 measures 6.25:1, so the darkened variant is
-     not needed and would only mute it.
+   --color-edge is the accent itself here. Light mode has to darken #be9241 to
+   #9a7433 to clear 3:1; on this background the original measures 6.25:1.
 
-     --color-surface / --color-cream are derived, as in light mode: the supplied
-     set has no card surface. Same 1.1:1-ish tint relationship to the background,
-     so cards read the same way in both themes.
-
-   Contrast measured against WCAG 2.1:
-     ink on bg        13.21:1  AAA
-     ink on surface   11.69:1  AAA
-     strong on bg     13.84:1  AAA
-     subtle on bg     13.11:1  AAA
-     edge on bg        6.25:1  AA   (comfortably past the 3:1 non-text minimum)
-     edge on surface   5.53:1  AA
-
-   This selector is (0,2,0) against @theme's (0,1,0) `:root`, so it wins on
-   specificity and does not depend on source or layer order.
-   --------------------------------------------------------------------------- */
+   Contrast (WCAG 2.1):
+     ink on bg 13.21   ink on surface 11.69   strong on bg 13.84
+     edge on bg 6.25   edge on surface 5.53 */
 :root[data-theme="dark"] {
     --color-ink: #e2ddcb;
     --color-strong: #e3e2d9;
@@ -72,53 +41,34 @@
     --color-surface: #2a2109;
     --color-cream: #3a2f14;
 
-    /* Tells the browser to render its own furniture -- scrollbars, form
-       controls, the flash before paint -- dark as well. */
     color-scheme: dark;
 }
 
 html {
-    /* THE global rescale: everything on the site is 80% of its former size.
-       ---------------------------------------------------------------------
-       One declaration rather than 60 edited utilities, because every size in
-       this project is already rem-based -- Tailwind v4's spacing scale is
-       0.25rem, the type scale is rem, and so are --container-measure (64rem),
-       --bar-height (3.75rem) and --nav-clearance (4.5rem). Shrinking the root
-       shrinks all of them together and keeps their proportions exact.
+    /* Global 80% rescale. One declaration works because every size here is
+       rem-based -- Tailwind's spacing scale, the type scale, --container-measure,
+       --bar-height, --nav-clearance -- so all of them shrink in proportion.
 
-       `80%`, not `12.8px`: a percentage is relative to the browser's own font
-       size, so a reader who has set theirs to 20px still gets 80% of THAT.
-       A hard px value would silently throw their preference away.
+       `80%` rather than `12.8px` keeps the reader's own browser font size in
+       play; a hard px would discard it.
 
-       What deliberately does NOT scale:
-         - media queries. Per spec, rem in a media query resolves against the
-           initial 16px, not this value, so sm/lg still break at 640/1024 and
-           the layout does not reshuffle.
-         - 1px borders and hairlines, which are px and should stay crisp.
-         - touch targets and the gap between them. Those are pinned in px in
-           tailwind.css precisely because they must NOT follow this scale --
-           44x44 and 8px are physical-finger minimums, not visual ones. */
+       Deliberately unaffected: media queries (per spec, rem there resolves
+       against the initial 16px, so sm/lg still break at 640/1024), 1px borders,
+       and the touch targets and gaps pinned in px in tailwind.css. */
     font-size: 80%;
 
     scroll-behavior: smooth;
 
-    /* No section snapping of any kind. CSS scroll-snap was tried in both modes
-       and neither worked (`proximity` left a dead zone mid-gap, `mandatory`
-       dragged fine trackpad scrolling backwards), then a JS controller replaced
-       it, and that was stripped too. Scrolling is plain and entirely the
-       browser's now. Do not reintroduce either without a reason that is not
-       "it should be smoother". */
-
-    /* Keeps a hash target clear of the fixed top bar: without this, jumping to
-       #reachme lands it 72px under the navbar. Nothing to do with snapping --
-       this is native hash navigation and it stays. */
+    /* Native hash navigation only -- keeps #reachme from landing under the bar.
+       There is no section snapping: CSS scroll-snap was tried in both modes and
+       neither worked, and the JS controller that replaced it was stripped. Do
+       not reintroduce either without a reason beyond "it should be smoother". */
     scroll-padding-top: var(--nav-clearance);
 }
 
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto;
-
     }
 }
 
@@ -127,20 +77,13 @@ body {
     color: var(--color-ink);
     font-family: var(--font-display);
 
-    /* No margin here on purpose. The gutter lives in .page-block / .navbar-inner
-       (px-3, px-5 from sm) so that one definition serves both the page content
-       and the fixed navbar. A body margin cannot do that job: it does not apply
-       to a fixed element, so while it existed the bar's contents were offset
-       from the content below it and the two could never line up. */
-    /* Clears the fixed navbar, a full-width top bar at every width. Without this
-       every page renders its first heading underneath it. This is also the only
-       top rhythm /works and /works/:slug get -- they used to add lg:pt-60 to
-       dodge the old left rail, which no longer exists. */
+    /* No margin on purpose: the gutter lives in .page-block / .navbar-inner so
+       one definition serves both the content and the fixed navbar, which a body
+       margin cannot reach. padding-top clears the bar. */
     padding-top: var(--nav-clearance);
 }
 
-/* Was missing entirely: keyboard users got only the UA default ring, which is
-   near-invisible against this palette. */
+/* The UA default ring is near-invisible against this palette. */
 :focus-visible {
     outline: 3px solid var(--color-ink);
     outline-offset: 3px;

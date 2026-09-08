@@ -1,39 +1,24 @@
 @import "tailwindcss";
 
-/* Tailwind v4 auto-detects content, but .rs is not a web file type it can be
-   assumed to scan. Register src/ explicitly so class names in rsx! are found. */
+/* .rs is not a web file type Tailwind scans by default, so class names in rsx!
+   are invisible without this. */
 @source "./src";
 
-/* `static` forces every token to be emitted even when no utility references it.
-   Required because assets/main.css reads these with var() for the html/body base,
-   and a plain @theme would tree-shake them away -> transparent background. */
+/* `static`, not plain @theme: assets/main.css reads these tokens with var() for
+   the html/body base, and @theme would tree-shake the unreferenced ones away,
+   leaving a transparent background. */
 @theme static {
-  /* Palette. Supplied as text / background / primary / secondary / accent;
-     mapped onto the roles this stylesheet already used:
+  /* Light palette. Dark lives in assets/main.css under :root[data-theme="dark"].
 
-       text       #342f1d -> --color-ink       body copy
-       primary    #26251c -> --color-strong    headings
-       secondary  #303022 -> --color-subtle    de-emphasised text
-       accent     #be9241 -> --color-accent    highlights
-       background #fff7e0 -> --color-bg        page
+     --color-surface / --color-edge / --color-cream are derived, not supplied:
+     the source palette has no light card surface and no border colour that
+     clears 3:1.
 
-     Two values are derived, because the supplied set has no light surface
-     (primary and secondary are both near-black) and no border colour that
-     clears the 3:1 minimum:
-
-       --color-surface  a warm tint of the background, for cards and the navbar
-       --color-edge     the accent darkened until borders are actually visible
-       --color-cream    a deeper tint again, so a skeleton block reads on surface
-
-     Contrast measured against WCAG 2.1:
-       ink on bg          12.50:1  AAA
-       ink on surface     11.37:1  AAA
-       strong on bg       14.39:1  AAA
-       subtle on bg       12.47:1  AAA
-       edge on bg          3.99:1  AA   non-text / borders
-       edge on surface     3.63:1  AA   non-text / borders
-       accent on bg        2.66:1       BELOW 3:1 -- never for borders or text,
-                                        which is exactly why --color-edge exists */
+     Contrast (WCAG 2.1):
+       ink on bg 12.50   ink on surface 11.37   strong on bg 14.39
+       edge on bg 3.99   edge on surface 3.63   (non-text minimum is 3:1)
+       accent on bg 2.66 -- BELOW 3:1. Never use --color-accent for borders or
+       text; that is what --color-edge exists for. */
   --color-ink: #342f1d;
   --color-strong: #26251c;
   --color-subtle: #303022;
@@ -45,130 +30,78 @@
 
   --font-display: "Google Sans", Tahoma, Geneva, Verdana, sans-serif;
 
-  /* THE one width. Every region of the site is measured against this: prose,
-     the card grid, the project image, the navbar's contents. Before it existed
-     each of those set its own (800 / 1152 / 768 / full-bleed), so the page's
-     left and right edges moved as you scrolled.
+  /* The one width every region obeys -- prose, card grid, project image, navbar
+     contents. --container-* is the namespace Tailwind v4 builds max-w-* from,
+     so this emits `max-w-measure`. */
+  --container-measure: 64rem;
 
-     The --container-* namespace is what Tailwind v4 builds max-w-* from, so
-     this emits `max-w-measure`. Change it here and the whole site follows. */
-  --container-measure: 64rem;   /* 1024px */
-
-  /* Fluid type. Replaces fixed 80/40/25px, which overflowed at 375px. */
   --text-display: clamp(2.5rem, 9vw, 5rem);
   --text-section: clamp(1.75rem, 5vw, 2.5rem);
   --text-lead: clamp(1.05rem, 2.2vw, 1.5rem);
 }
 
-/* ---------------------------------------------------------------------------
-   Components transferred from assets/main.css.
-   Reference copy of the originals is at ./main.css.backup
-
-   Living in @layer components (rather than unlayered, as main.css was) is what
-   lets per-instance utilities in the rsx override these. Unlayered CSS beats
-   every layered utility regardless of source order.
-
-   [!] marks a deliberate change from the original; everything else is a
-       like-for-like transfer.
-   --------------------------------------------------------------------------- */
+/* These live in @layer components so per-instance utilities in the rsx can
+   override them. Unlayered CSS beats every layered utility regardless of
+   source order. */
 @layer components {
 
-  /* [!] now carries the shared width for the entire site. It already wraps every
-         page region -- Hero, AboutMe, MyWorks, ReachMe, /works, /works/:slug and
-         the skeletons -- so this is the one place the measure has to be applied
-         for all of them to agree.
-         px-3 below sm / px-5 above is the site's only gutter definition now
-         (`body { margin: 20px }` was removed); .navbar-inner repeats exactly
-         these two values so the bar's contents line up with the content below,
-         which a body margin could never do -- it does not apply to a fixed
-         element. */
+  /* Carries the shared width for the whole site, and the site's only gutter
+     definition. .navbar-inner repeats px-3/sm:px-5 exactly so the bar lines up
+     with the content below -- a body margin cannot do that job, it does not
+     apply to a fixed element. */
   .page-block {
     @apply m-auto flex w-full max-w-measure flex-col items-center justify-center
            px-3 text-center sm:px-5;
   }
 
-  /* [!] new. Home's four sections only -- deliberately NOT folded into
-         .page-block, which is shared with /works and /works/:slug and must keep
-         its natural height there.
-
-         dvh rather than vh so collapsing mobile browser chrome does not change
-         the target height. The nav clearance is subtracted so a section is one
-         *visible* screen instead of one screen plus a strip hidden under the
-         mobile top bar; the underscores are Tailwind's escape for the spaces
-         calc() requires around the minus sign.
-
-         .page-block already supplies flex/items-center/justify-center, so the
-         content centres itself inside the taller box with no extra rules.
-
-         Height only. This used to double as the marker for a JS scroll-snap
-         controller; that was stripped out, so the class now does exactly one
-         thing and scrolling is entirely the browser's. */
+  /* Home's four sections only; /works must keep its natural height. dvh so
+     collapsing mobile browser chrome does not change the target, minus the nav
+     clearance so a section is one *visible* screen. The underscores are
+     Tailwind's escape for the spaces calc() needs around the minus. */
   .page-section {
     @apply min-h-[calc(100dvh_-_var(--nav-clearance))];
   }
 
-  /* [!] no longer a width. Its max-w-[800px] and px-5 are gone: the width now
-         comes from .page-block, and having a second, narrower cap here is
-         exactly what made prose sit inside a different column from the cards.
-         What is left is the prose rhythm -- stack, gap, line-height. */
+  /* Prose rhythm only -- the width comes from .page-block. */
   .zen-content {
     @apply mx-auto flex w-full flex-col gap-[30px] leading-[1.7];
   }
 
-  /* [!] fixed 80px -> fluid clamp
-     [!] text-strong is the supplied `primary`. It is a shade darker than body
-         copy, so headings carry a little more weight without a second hue. */
   .block-title {
     @apply text-display text-strong;
   }
 
-  /* [!] fixed 40px -> fluid clamp */
   .block-subtitle {
     @apply text-section text-strong;
   }
 
-  /* [!] fixed 25px -> fluid clamp
-     [!] justified. .page-block sets text-center for headings; this overrides it
-         for body copy only. hyphens-auto rides along to break long words rather
-         than opening rivers of whitespace to reach the right edge -- it works
-         because index.html declares lang="en", without which the browser has no
-         dictionary and silently does nothing. */
+  /* text-justify overrides .page-block's text-center for body copy only.
+     hyphens-auto works because index.html declares lang="en" -- without a
+     language the browser has no dictionary and silently does nothing. */
   .block-desc {
     @apply text-lead hyphens-auto text-justify;
   }
 
-  /* [!] was `repeat(3, 1fr)` + 400px cards = ~1240px min width, so the page
-         scrolled horizontally on anything smaller. Now reflows 1 -> 2 -> 3 up.
-     [!] max-w-6xl (1152px) and px-4 removed -- this grid was the widest thing on
-         the site and the reason the cards read as a wider document than the
-         paragraphs above them. Width and gutter both come from .page-block now.
-     [!] 3-up moved from xl: to lg:. xl is 1280px, but the container stops growing
-         at 1024, so with xl the grid would have sat at 2 columns across a whole
-         range of viewports that already had room for 3. */
+  /* 3-up at lg:, not xl:. The container stops growing at 1024, so xl would sit
+     at 2 columns across viewports that already have room for 3. */
   .project-container {
     @apply grid w-full gap-6 sm:grid-cols-2 lg:grid-cols-3;
   }
 
-  /* [!] was a hard `width: 800px`, overflowing every viewport under ~840px
-     [!] max-w-3xl (768px) removed -- it was a third distinct width, narrower than
-         both the prose and the grid. The image now fills the shared measure. */
   .project-big-image-container {
     @apply w-full rounded-lg border-4 border-edge;
   }
 
-  /* [!] was `width: 400px; height: 500px`. The fixed height clipped the longer
-         descriptions and left dead space under the short ones. */
-  /* [!] gains the pointer/keyboard feedback it never had. `group` sits on the
-         wrapping Link in main.rs / works.rs; group-focus-visible gives keyboard
-         users the same lift as hover, since the Link is what takes focus.
-         One `transition` (not transition-transform + transition-shadow -- those
-         both set transition-property, so the second silently wins).
-         Reduced motion is gated with `motion-safe:` on the lift, not undone
-         with a `motion-reduce:` override: the group-hover selector carries
-         (0,2,0) specificity and a plain `.projectbox` reset is only (0,1,0),
-         so the override loses and the card lifts anyway. (Tailwind v4 also
-         emits -translate-y as `translate`, which `transform: none` cannot
-         cancel.) The shadow is not motion, so it stays in both modes. */
+  /* `group` sits on the wrapping Link, so group-focus-visible gives keyboard
+     users the same lift as hover.
+
+     One `transition`, not transition-transform + transition-shadow: both set
+     transition-property and the second silently wins.
+
+     The lift is gated with motion-safe:, NOT undone with motion-reduce:. The
+     group-hover selector is (0,2,0) and a plain .projectbox reset is (0,1,0),
+     so an override loses and the card lifts anyway; Tailwind also emits
+     -translate-y as `translate`, which `transform: none` cannot cancel. */
   .projectbox {
     @apply flex h-full min-h-[28rem] w-full flex-col gap-2.5 rounded-lg
            border border-edge bg-surface p-4
@@ -179,9 +112,6 @@
            motion-reduce:transition-none;
   }
 
-  /* [!] new. Loading placeholder. `motion-safe:` only, so under
-         prefers-reduced-motion it is a plain static block -- the same gating
-         the card lift uses. Cream reads as a tint on both bg and surface. */
   .skeleton {
     @apply rounded-lg bg-cream/60 motion-safe:animate-pulse;
   }
@@ -190,21 +120,18 @@
     @apply flex flex-row items-center justify-start gap-2.5 text-2xl;
   }
 
-  /* [!] gains the hover/active feedback it never had */
   .button {
     @apply flex flex-row items-center gap-2.5 rounded-lg border border-edge
            bg-surface p-2.5 transition-colors duration-200
            hover:bg-cream active:scale-[0.98];
   }
 
-  /* [!] absorbs the inline `height: 200px; object-fit: cover` from main.rs and
-         declares an aspect-ratio, so space is reserved before the image loads */
+  /* aspect-ratio reserves the space before the image loads. */
   .image-portrait {
     @apply aspect-[16/10] w-full rounded-lg border-2 border-edge
            bg-surface object-cover;
   }
 
-  /* [!] new rule. Absorbs four inline `style: "width: 40px"` in main.rs. */
   .social-icon {
     @apply w-10;
   }
@@ -213,168 +140,93 @@
     @apply flex flex-wrap justify-center gap-1;
   }
 
-  /* [!] 12px -> 13px */
   .tech-tag {
     @apply rounded-full border border-edge px-2.5 py-1 text-[0.8125rem];
   }
 
-  #work-page {
-    @apply gap-8;
-  }
-
-  /* [!] no longer hidden below lg -- the nav lost its pill (border + bg +
-         px-4/py-2), which freed the width for the title to share the one line.
-         Down from text-3xl: it is bar chrome now, not a heading, and it is the
-         first thing sacrificed when the line runs short.
-
-         [!] hidden below sm. The four links previously filled the bar to within
-         0.8px at 320px, so the 44x44 theme button could not be added without
-         something giving way. Shrinking further is not available: the title had
-         already reached its 10px floor and the links their px-0.5, and the two
-         things that could still yield -- min-h-11 and the 8px gap between
-         targets -- are the touch-target guarantees, which are not tradeable.
-
-         Measured overflow once the button was added, Tahoma fallback:
-           320 -> 51.1px over    360 -> 43.1px over
-           375 -> 50.2px over    414 -> 11.2px over
-         Dropping the title reclaims its width plus the gap (63.3px below 375,
-         85.4px above), which clears every one of those. 640px up keeps it.
-
-         Nothing is actually lost on a phone: the hero directly beneath the bar
-         reads "denizhoroz" in the largest type on the site. */
+  /* Hidden below sm: the four links plus the 44x44 theme button fill the bar
+     completely at 320-414px, and the touch-target guarantees below are not
+     tradeable. The hero directly beneath reads "denizhoroz" anyway. */
   .navbar-title {
     @apply hidden font-bold sm:block sm:text-lg lg:text-xl;
   }
 
-  /* [!] was a top bar below lg and a fixed left rail from lg up. Now one layout
-         at every width: full-width bar, title left, nav centred in the space
-         that is left over.
+  /* bg-bg, not transparent: the bar is `fixed`, so content scrolls underneath
+     and would show through behind the links.
 
-         bg-bg, not transparent: the bar is `fixed`, so page content scrolls
-         underneath it. Without an opaque fill the links sit on top of whatever
-         is passing and become unreadable. Matching the page colour is what
-         keeps it reading as "no box" while still occluding.
+     Full-bleed even though its contents are measured -- the fill has to span
+     the viewport, and border-b lives here so the rule does too. Height comes
+     from .navbar-inner, so the border still lands at the bar's true bottom.
 
-         The BAR stays full-bleed even though its contents are measured: the fill
-         has to span the viewport, or content scrolling underneath would show
-         through at the edges. Layout moved to .navbar-inner.
-
-         Height budget is --nav-clearance (4.5rem): 44px link + 16px py-2 = 60px.
-
-         NOTE: because this is `fixed`, content overflowing it does NOT show up in
-         document.scrollWidth. Horizontal fit has to be checked against the
-         children's own left/right edges, not the document.
-
-     [!] border-b lives HERE, not on .navbar-inner, so the rule spans the whole
-         page rather than stopping at the shared measure. The container is
-         `inset-x-0`, i.e. edge to edge, and it carries no padding of its own --
-         .navbar-inner's py-2 sets the height -- so the border still lands
-         exactly at the bottom of the bar. Same 1px border-edge as .button and
-         .projectbox. */
+     Because this is `fixed`, its overflow never reaches document.scrollWidth.
+     Check horizontal fit against the children's own edges, not the document. */
   .navbar-container {
     @apply fixed inset-x-0 top-0 z-[100] border-b border-edge bg-bg;
   }
 
-  /* [!] new. Holds the bar's contents to the same measure and the same gutter as
-         .page-block, which is what makes the title sit exactly above the left
-         content edge and the last link above the right one. justify-between is
-         what pushes them to those two edges.
-     [!] the height lives here rather than on .navbar-container, and that is what
-         lets the container carry a full-bleed border-b that still sits at the
-         true bottom of the bar: the inner defines the height, the container just
-         draws the line across the page.
-         min-h-[var(--bar-height)] rather than py-2 -- same 60px, but now stated
-         as a height the footer can read too, instead of padding around a 44px
-         link that the footer would have had to guess at. items-center does the
-         vertical centring that the padding used to.
-     [!] justify-center below sm, justify-between from sm up. The title is hidden
-         below sm, and justify-between with a single remaining child pins it to
-         the LEFT -- the nav would jump to the left edge on phones. Centring the
-         lone nav is both correct and what it should look like there. */
+  /* Holds the bar's contents to the same measure and gutter as .page-block.
+     min-h-[var(--bar-height)] rather than padding, so the footer can read the
+     same variable and match this height exactly.
+     justify-center below sm because the title is hidden there, and
+     justify-between with one remaining child would pin the nav to the left. */
   .navbar-inner {
     @apply mx-auto flex min-h-[var(--bar-height)] w-full max-w-measure
            flex-row items-center justify-center gap-2 px-3
            sm:justify-between sm:px-5;
   }
 
-  /* [!] the pill is gone: no border, no bg-surface, no px/py. Also gone is the
-         whole lg: sidebar branch (max-w-40 / flex-col / px-8 / py-4).
-         No flex-1: the nav takes only the width its links need, so the parent's
-         justify-center can centre the title and the links together. (flex-1 made
-         the nav swallow all leftover space, which pinned the title to the left
-         edge -- correct for "title left, nav centred in the remainder", wrong for
-         "centre the whole thing".)
+  /* No flex-1: the nav must size to its links so the parent can centre title
+     and links together.
 
-         flex-nowrap: one line is a requirement, so an overflow must be fixed by
-         shrinking (title first), never by wrapping.
+     flex-nowrap because one line is a requirement -- fix an overflow by
+     shrinking the title, never by wrapping.
 
-         gap-[8px] is a floor, not a preference: 8px is the minimum spacing
-         between adjacent touch targets. It is in px, not gap-2, for the same
-         reason min-h-[44px] is -- the 80% root rescale would otherwise drop it
-         to 6.4px. The sm:/lg: gaps are comfort, not safety, so those scale. */
+     gap-[8px] in px, not gap-2: 8px is the minimum spacing between touch
+     targets and the 80% root rescale would drop a rem value to 6.4px. The
+     sm:/lg: gaps are comfort, not safety, so those may scale. */
   #navbar {
     @apply flex flex-row flex-nowrap items-center justify-center
            gap-[8px] text-xs sm:gap-3 sm:text-sm lg:gap-6 lg:text-base;
   }
 
-  /* [!] colour was #8D493A (3.53:1 on bg); now ink.
-     [!] min-h-11 (44px) is new: at px-2 py-1 the target was ~22px tall, half the
-         44x44 minimum. Height costs nothing horizontally, so it survives every
-         round of shrinking.
-     [!] whitespace-nowrap is load-bearing, not cosmetic. Flex items shrink by
-         default, so without it a link too narrow for its label silently wraps
-         to two lines *inside* the 44px box -- the box height never changes, so
-         nothing detects it and "who am i?" quietly renders as "who am / i?".
-         With nowrap the same condition becomes measurable overflow. NB: measure
-         it against the bar's own edges -- the bar is `fixed`, so its overflow
-         never reaches document.scrollWidth.
-     [!] px-0.5 under 360 is the second shrink step, applied only after the title
-         has already gone to its 10px floor. It trims horizontal padding, never
-         the 44px height or the 8px gap -- those are the touch-target guarantees.
-     [!] min-h-[44px], not min-h-11. The root font-size is 80%, so the rem-based
-         min-h-11 (2.75rem) would render at 35px -- a finger is not 80% smaller
-         because the design is. Pinned in px so the global rescale cannot reach
-         it. */
+  /* min-h-[44px] in px for the same reason as the gap above: rem would render
+     35px under the 80% root, and a finger is not 80% smaller.
+
+     whitespace-nowrap is load-bearing. Flex items shrink by default, so without
+     it a too-narrow link wraps to two lines *inside* the 44px box -- the height
+     never changes, so nothing detects it and "who am i?" renders as
+     "who am / i?". With nowrap the same condition becomes measurable overflow.
+
+     px-0.5 under 360 trims padding only; never the height or the gap. */
   #navbar a {
     @apply flex min-h-[44px] items-center whitespace-nowrap rounded px-1.5 py-1
            text-ink no-underline transition-colors duration-200
            max-[359px]:px-0.5 sm:px-2;
   }
 
-  /* [!] THE BUG this rule originally fixed: hover was `color: #F8EDE3` on a
-         #DFD3C3 navbar = 1.28:1, i.e. the link vanished on hover. The cream chip
-         that replaced it is now gone too -- hover is an underline, so the text
-         colour never changes and there is no contrast risk left at all.
-         The base rule sets no-underline; this wins on specificity (1,1,1)
-         vs (1,0,1). */
+  /* Beats the base rule's no-underline on specificity, (1,1,1) vs (1,0,1). */
   #navbar a:hover {
     @apply cursor-pointer underline decoration-2 underline-offset-4;
   }
 
-  /* [!] new. The theme button. Not covered by `#navbar a` -- it is a <button>,
-         deliberately, since it performs an action rather than navigating.
-         min-h-11/min-w-11 gives it the same 44x44 target as the links.
-         Hover is a colour shift to --color-edge rather than the links'
-         underline: there is no text to underline. Edge is the one accent that
-         clears 3:1 against the page in BOTH themes (3.99:1 light, 6.25:1 dark),
-         which a graphical control needs. */
+  /* A <button>, so `#navbar a` does not reach it. Hover shifts to --color-edge
+     rather than underlining -- there is no text -- and edge is the one accent
+     clearing 3:1 in both themes (3.99 light, 6.25 dark). */
   .theme-toggle {
     @apply flex min-h-[44px] min-w-[44px] cursor-pointer items-center
            justify-center rounded text-ink transition-colors duration-200
            hover:text-edge;
   }
 
-  /* currentColor on the svg means this size rule is all the icon needs -- the
-     colour comes from .theme-toggle and follows the theme automatically. */
+  /* currentColor on the svg means size is all it needs; colour follows the
+     theme through .theme-toggle. */
   .theme-icon {
     @apply h-5 w-5;
   }
 
-  /* [!] Applied by Link's `active_class`, which also emits aria-current="page".
-         Deliberately NOT underlined: the underline means "you are hovering
-         this", and reusing it for "you are here" would make the current page
-         look permanently hovered. Weight alone carries the state, and
-         aria-current carries it for screen readers. */
+  /* Deliberately not underlined: the underline means "hovering", and reusing it
+     for "you are here" makes the current page look permanently hovered. Weight
+     carries it visually, aria-current for screen readers. */
   .nav-active {
     @apply font-semibold;
   }

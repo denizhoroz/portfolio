@@ -1,14 +1,10 @@
 use dioxus::prelude::*;
 
 mod components;
-// Glob-imported, not listed: the Route derive below needs Home, MyWorksPage,
-// WorkPage and Navbar in scope by name, and this is also what lets one component
-// module reach another through `crate::` (private imports are visible to
-// descendant modules).
+// Glob-imported: the Route derive needs these in scope by name, and it is also
+// what lets one component module reach another through `crate::`.
 use components::*;
 
-// No `use data::*` here any more -- main.rs itself touches none of it. Each
-// component reaches what it needs directly, e.g. `crate::data::fetch_projects`.
 mod data;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
@@ -26,9 +22,8 @@ enum Route {
     WorkPage { slug: String }
 }
 
-// Document-level assets. Everything else is declared next to the component that
-// renders it -- the social icons live in components/home/reach_me.rs, the GitHub
-// icon on the project page in components/works/detail.rs.
+// Document-level assets; everything else is declared next to the component that
+// renders it.
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/main.css");
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");

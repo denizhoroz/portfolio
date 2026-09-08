@@ -1,9 +1,8 @@
 /// A project, as plain data.
 ///
-/// Deliberately free of both `Asset` and `#[derive(Props)]`. This type has to be
-/// able to arrive from a database later, and `Asset` is produced by the
-/// compile-time `asset!()` macro -- it cannot come off a wire. The rendering
-/// contract lives in `ProjectBoxProps` next to the component instead.
+/// Deliberately free of `Asset` and `#[derive(Props)]`: this type must be able
+/// to arrive from a database, and `asset!()` is compile-time only. The render
+/// contract lives in `ProjectBoxProps` instead.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Project {
     pub slug: String,
@@ -12,11 +11,10 @@ pub struct Project {
     pub tech: Vec<String>,
     pub gitlink: String,
 
-    /// Resolved to a bundled asset by [`crate::data::asset_for`]. A key, not a
-    /// path or a URL, so the images stay compile-time assets in this repo.
+    /// A key, not a path -- resolved to a bundled asset by
+    /// [`crate::data::asset_for`] so images stay compile-time assets.
     pub image_key: String,
 
-    /// Display order, ascending. Mirrors `ORDER BY position` in a future
-    /// database; today it just makes the old `vec!` ordering explicit.
+    /// Display order, ascending. Mirrors `ORDER BY position` later.
     pub position: i32,
 }

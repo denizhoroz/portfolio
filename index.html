@@ -4,21 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!--
-      These live here, not in a document::Meta, on purpose. Dioxus inserts head
-      components at runtime from WASM, and link-preview scrapers (X, LinkedIn,
-      Slack) do not run JavaScript -- they would never see them. Anything a
-      scraper must read has to be in the served HTML.
-
-      One card for the whole site: per-route cards need prerendering.
-
-      No og:image yet. Every shipped asset is served under a content-hashed
-      filename and only asset!()-referenced files are copied into the build at
-      all, so there is no stable URL to point at.
-
-      No <link rel="canonical">: a single static one would claim every route is
-      the root, which is worse than having none.
-    -->
+    <!-- Here, not in a document::Meta: Dioxus inserts head components at
+         runtime from WASM and link-preview scrapers do not run JavaScript.
+         One card for the whole site; per-route cards need prerendering.
+         No og:image (assets are content-hashed, so no stable URL) and no
+         canonical (a single static one would claim every route is the root). -->
     <meta name="description" content="Deniz Horoz, software engineer. I develop helpful apps to solve people's problems." />
 
     <meta property="og:type" content="website" />
@@ -33,19 +23,11 @@
          <title>, so any content here yields it twice. -->
     <title></title>
 
-    <!--
-      Theme, resolved before the first paint.
-
-      This has to be inline and synchronous, and it has to be here rather than in
-      the Dioxus app: the app only starts after the WASM binary downloads and
-      boots, which is many frames later. Setting the theme from there means the
-      page paints light first and then snaps to dark -- a full-screen flash on
-      every load for a dark-mode user.
-
-      Stored choice wins; otherwise follow the OS. Wrapped in try/catch because
-      localStorage throws outright in some privacy modes, and a theme script must
-      never be the thing that stops the page rendering.
-    -->
+    <!-- Theme, resolved before first paint. Must be inline and synchronous, and
+         must NOT live in the Dioxus app: that only starts once the WASM boots,
+         so a dark-mode reader would get a full-screen flash of light on every
+         load. Stored choice wins, else the OS. try/catch because localStorage
+         throws outright in some privacy modes. -->
     <script>
       (() => {
         try {
