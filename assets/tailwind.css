@@ -641,7 +641,7 @@
     flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
-    gap: calc(var(--spacing) * 2);
+    gap: 8px;
     font-size: var(--text-xs);
     line-height: var(--tw-leading, var(--text-xs--line-height));
     @media (width >= 40rem) {
@@ -661,7 +661,7 @@
   }
   #navbar a {
     display: flex;
-    min-height: calc(var(--spacing) * 11);
+    min-height: 44px;
     align-items: center;
     border-radius: 0.25rem;
     padding-inline: calc(var(--spacing) * 1.5);
@@ -689,8 +689,8 @@
   }
   .theme-toggle {
     display: flex;
-    min-height: calc(var(--spacing) * 11);
-    min-width: calc(var(--spacing) * 11);
+    min-height: 44px;
+    min-width: 44px;
     cursor: pointer;
     align-items: center;
     justify-content: center;

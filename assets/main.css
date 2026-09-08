@@ -78,6 +78,28 @@
 }
 
 html {
+    /* THE global rescale: everything on the site is 80% of its former size.
+       ---------------------------------------------------------------------
+       One declaration rather than 60 edited utilities, because every size in
+       this project is already rem-based -- Tailwind v4's spacing scale is
+       0.25rem, the type scale is rem, and so are --container-measure (64rem),
+       --bar-height (3.75rem) and --nav-clearance (4.5rem). Shrinking the root
+       shrinks all of them together and keeps their proportions exact.
+
+       `80%`, not `12.8px`: a percentage is relative to the browser's own font
+       size, so a reader who has set theirs to 20px still gets 80% of THAT.
+       A hard px value would silently throw their preference away.
+
+       What deliberately does NOT scale:
+         - media queries. Per spec, rem in a media query resolves against the
+           initial 16px, not this value, so sm/lg still break at 640/1024 and
+           the layout does not reshuffle.
+         - 1px borders and hairlines, which are px and should stay crisp.
+         - touch targets and the gap between them. Those are pinned in px in
+           tailwind.css precisely because they must NOT follow this scale --
+           44x44 and 8px are physical-finger minimums, not visual ones. */
+    font-size: 80%;
+
     scroll-behavior: smooth;
 
     /* No section snapping of any kind. CSS scroll-snap was tried in both modes

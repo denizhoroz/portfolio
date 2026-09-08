@@ -308,12 +308,13 @@
          flex-nowrap: one line is a requirement, so an overflow must be fixed by
          shrinking (title first), never by wrapping.
 
-         gap-2 is a floor, not a preference: 8px is the minimum spacing between
-         adjacent touch targets. The earlier gap-1 (4px) bought 6px of width by
-         breaking that, which is not a trade worth making. */
+         gap-[8px] is a floor, not a preference: 8px is the minimum spacing
+         between adjacent touch targets. It is in px, not gap-2, for the same
+         reason min-h-[44px] is -- the 80% root rescale would otherwise drop it
+         to 6.4px. The sm:/lg: gaps are comfort, not safety, so those scale. */
   #navbar {
     @apply flex flex-row flex-nowrap items-center justify-center
-           gap-2 text-xs sm:gap-3 sm:text-sm lg:gap-6 lg:text-base;
+           gap-[8px] text-xs sm:gap-3 sm:text-sm lg:gap-6 lg:text-base;
   }
 
   /* [!] colour was #8D493A (3.53:1 on bg); now ink.
@@ -329,9 +330,13 @@
          never reaches document.scrollWidth.
      [!] px-0.5 under 360 is the second shrink step, applied only after the title
          has already gone to its 10px floor. It trims horizontal padding, never
-         min-h-11 or the 8px gap -- those are the touch-target guarantees. */
+         the 44px height or the 8px gap -- those are the touch-target guarantees.
+     [!] min-h-[44px], not min-h-11. The root font-size is 80%, so the rem-based
+         min-h-11 (2.75rem) would render at 35px -- a finger is not 80% smaller
+         because the design is. Pinned in px so the global rescale cannot reach
+         it. */
   #navbar a {
-    @apply flex min-h-11 items-center whitespace-nowrap rounded px-1.5 py-1
+    @apply flex min-h-[44px] items-center whitespace-nowrap rounded px-1.5 py-1
            text-ink no-underline transition-colors duration-200
            max-[359px]:px-0.5 sm:px-2;
   }
@@ -354,8 +359,9 @@
          clears 3:1 against the page in BOTH themes (3.99:1 light, 6.25:1 dark),
          which a graphical control needs. */
   .theme-toggle {
-    @apply flex min-h-11 min-w-11 cursor-pointer items-center justify-center
-           rounded text-ink transition-colors duration-200 hover:text-edge;
+    @apply flex min-h-[44px] min-w-[44px] cursor-pointer items-center
+           justify-center rounded text-ink transition-colors duration-200
+           hover:text-edge;
   }
 
   /* currentColor on the svg means this size rule is all the icon needs -- the
