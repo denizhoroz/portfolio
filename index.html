@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!--
+      These live here, not in a document::Meta, on purpose. Dioxus inserts head
+      components at runtime from WASM, and link-preview scrapers (X, LinkedIn,
+      Slack) do not run JavaScript -- they would never see them. Anything a
+      scraper must read has to be in the served HTML.
+
+      One card for the whole site: per-route cards need prerendering.
+
+      No og:image yet. Every shipped asset is served under a content-hashed
+      filename and only asset!()-referenced files are copied into the build at
+      all, so there is no stable URL to point at.
+
+      No <link rel="canonical">: a single static one would claim every route is
+      the root, which is worse than having none.
+    -->
+    <meta name="description" content="Deniz Horoz, software engineer. I develop helpful apps to solve people's problems." />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="denizhoroz" />
+    <meta property="og:title" content="denizhoroz — Software Engineer" />
+    <meta property="og:description" content="Deniz Horoz, software engineer. I develop helpful apps to solve people's problems." />
+    <meta property="og:url" content="https://denizhoroz.com/" />
+
+    <meta name="twitter:card" content="summary" />
+
+    <!-- Deliberately empty: dx APPENDS the Dioxus.toml title into an existing
+         <title>, so any content here yields it twice. -->
+    <title></title>
+  </head>
+  <body>
+    <div id="main"></div>
+  </body>
+</html>

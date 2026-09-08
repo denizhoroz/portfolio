@@ -1,0 +1,75 @@
+/* Document-level base styles only.
+   ---------------------------------------------------------------------------
+   Every component class that used to live here (.page-block, .projectbox,
+   .button, .navbar-container, #navbar, ...) has been transferred into
+   ../tailwind.css under @layer components, where it is expressed with @apply
+   against the design tokens in @theme.
+
+   Verbatim reference copy of this file before the migration: ../main.css.backup
+
+   Why the component rules had to leave this file: CSS here is unlayered, and
+   unlayered CSS beats every layered Tailwind utility regardless of source
+   order. Leaving `.projectbox { width: 400px }` here would silently override a
+   `w-full` utility in the rsx. Base element styles below are safe to keep
+   unlayered because no utility targets html/body directly.
+   --------------------------------------------------------------------------- */
+
+:root {
+    /* Vertical space the fixed navbar occupies. It is a full-width top bar at
+       every width -- there is no longer a left-rail variant, so this value is
+       unconditional. Three things need this number -- body padding, section
+       height and scroll-padding -- so it lives here instead of being written
+       out three times and drifting.
+
+       The rendered bar must stay within this budget or content slides under it.
+       Measured: 44px link (min-h-11) + 16px container py-2 = ~60px of 72px. */
+    --nav-clearance: 4.5rem;
+}
+
+html {
+    scroll-behavior: smooth;
+
+    /* No section snapping of any kind. CSS scroll-snap was tried in both modes
+       and neither worked (`proximity` left a dead zone mid-gap, `mandatory`
+       dragged fine trackpad scrolling backwards), then a JS controller replaced
+       it, and that was stripped too. Scrolling is plain and entirely the
+       browser's now. Do not reintroduce either without a reason that is not
+       "it should be smoother". */
+
+    /* Keeps a hash target clear of the fixed top bar: without this, jumping to
+       #reachme lands it 72px under the navbar. Nothing to do with snapping --
+       this is native hash navigation and it stays. */
+    scroll-padding-top: var(--nav-clearance);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+
+    }
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-display);
+
+    /* No margin here on purpose. The gutter lives in .page-block / .navbar-inner
+       (px-3, px-5 from sm) so that one definition serves both the page content
+       and the fixed navbar. A body margin cannot do that job: it does not apply
+       to a fixed element, so while it existed the bar's contents were offset
+       from the content below it and the two could never line up. */
+    /* Clears the fixed navbar, a full-width top bar at every width. Without this
+       every page renders its first heading underneath it. This is also the only
+       top rhythm /works and /works/:slug get -- they used to add lg:pt-60 to
+       dodge the old left rail, which no longer exists. */
+    padding-top: var(--nav-clearance);
+}
+
+/* Was missing entirely: keyboard users got only the UA default ring, which is
+   near-invisible against this palette. */
+:focus-visible {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
