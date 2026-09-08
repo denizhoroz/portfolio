@@ -27,8 +27,8 @@ enum Route {
 }
 
 // Document-level assets. Everything else is declared next to the component that
-// renders it -- the social icons live in components/reach_me.rs, the GitHub icon
-// on the project page in components/work.rs.
+// renders it -- the social icons live in components/home/reach_me.rs, the GitHub
+// icon on the project page in components/works/detail.rs.
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_CSS: Asset = asset!("/assets/main.css");
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");

@@ -1,58 +1,24 @@
-// Every component is re-exported at this level, and main.rs does
-// `use components::*`, which is what lets a sibling module reach another one
-// through `crate::` (see the `use crate::{...}` lines in works.rs, my_works.rs
-// and navbar.rs).
+// One folder per route, plus one for the pieces that outlive any single route.
+//
+//   home/    the "/" route and the sections it is built from
+//   works/   the "/works" list and the "/works/:slug" detail page
+//   shared/  chrome and building blocks used by more than one route
+//
+// A section lives with the route that renders it -- about_me.rs sits in home/
+// because "who am i?" is currently a section of the Home page. If it becomes its
+// own route later, the file moves to an about/ folder and nothing else changes:
+// every component is reached through `crate::Name`, not through its path.
+//
+// That indirection is what the flat re-exports below buy. main.rs does
+// `use components::*`, so `crate::ProjectBox` resolves regardless of which
+// folder ProjectBox actually lives in -- which is why this reshuffle needed no
+// edits inside the components themselves.
 
-// ---- pages ----
-
-// home.rs -- composes the four Home sections below
 mod home;
 pub use home::*;
 
-// works.rs
 mod works;
 pub use works::*;
 
-// work.rs
-mod work;
-pub use work::*;
-
-// ---- Home sections, one file each ----
-
-// hero.rs
-mod hero;
-pub use hero::*;
-
-// about_me.rs
-mod about_me;
-pub use about_me::*;
-
-// my_works.rs
-mod my_works;
-pub use my_works::*;
-
-// reach_me.rs
-mod reach_me;
-pub use reach_me::*;
-
-// footer.rs
-mod footer;
-pub use footer::*;
-
-// ---- shared ----
-
-// navbar.rs -- the routed layout wrapping every page
-mod navbar;
-pub use navbar::*;
-
-// project_box.rs -- the card, shared by MyWorks and /works
-mod project_box;
-pub use project_box::*;
-
-// theme_toggle.rs -- the light/dark button at the end of the navbar
-mod theme_toggle;
-pub use theme_toggle::*;
-
-// states.rs -- loading / error UI for the async data seam
-mod states;
-pub use states::*;
+mod shared;
+pub use shared::*;

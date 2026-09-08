@@ -119,7 +119,7 @@ pub fn WorkPage(slug: String) -> Element {
     };
 
     // The lg:pt-60 wrapper that used to sit here cleared the old fixed left rail
-    // -- see the note in works.rs. The navbar is a top bar at every width now and
-    // body's padding-top clears it, so the wrapper div had nothing left to do.
+    // -- see the note in works/list.rs. The navbar is a top bar at every width
+    // now and body's padding-top clears it, so the wrapper had nothing left to do.
     body
 }
