@@ -49,6 +49,10 @@ pub use navbar::*;
 mod project_box;
 pub use project_box::*;
 
+// theme_toggle.rs -- the light/dark button at the end of the navbar
+mod theme_toggle;
+pub use theme_toggle::*;
+
 // states.rs -- loading / error UI for the async data seam
 mod states;
 pub use states::*;

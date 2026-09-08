@@ -32,6 +32,33 @@
     <!-- Deliberately empty: dx APPENDS the Dioxus.toml title into an existing
          <title>, so any content here yields it twice. -->
     <title></title>
+
+    <!--
+      Theme, resolved before the first paint.
+
+      This has to be inline and synchronous, and it has to be here rather than in
+      the Dioxus app: the app only starts after the WASM binary downloads and
+      boots, which is many frames later. Setting the theme from there means the
+      page paints light first and then snaps to dark -- a full-screen flash on
+      every load for a dark-mode user.
+
+      Stored choice wins; otherwise follow the OS. Wrapped in try/catch because
+      localStorage throws outright in some privacy modes, and a theme script must
+      never be the thing that stops the page rendering.
+    -->
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("theme");
+          const dark = saved
+            ? saved === "dark"
+            : matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.dataset.theme = dark ? "dark" : "light";
+        } catch (_) {
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="main"></div>

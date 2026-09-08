@@ -227,17 +227,23 @@
          Down from text-3xl: it is bar chrome now, not a heading, and it is the
          first thing sacrificed when the line runs short.
 
-         Measured against the shared measure's gutter (px-3 below sm), Tahoma
-         fallback, i.e. the wide case. Needed vs available:
-           375 -> 351.0 of 351   at text-sm
-           360 -> 338.2 of 336   at 12px -- 2.2px over, so 12px is not viable
-           360 -> 327.2 of 336   at 10px
-           320 -> 295.2 of 296   at 10px, and only with px-0.5 links
-         So it is a single step: 10px under 375, text-sm at 375 and up. There is
-         no width where a 12px title fits but a 14px one does not, which is why
-         the middle step was dropped rather than kept "just in case". */
+         [!] hidden below sm. The four links previously filled the bar to within
+         0.8px at 320px, so the 44x44 theme button could not be added without
+         something giving way. Shrinking further is not available: the title had
+         already reached its 10px floor and the links their px-0.5, and the two
+         things that could still yield -- min-h-11 and the 8px gap between
+         targets -- are the touch-target guarantees, which are not tradeable.
+
+         Measured overflow once the button was added, Tahoma fallback:
+           320 -> 51.1px over    360 -> 43.1px over
+           375 -> 50.2px over    414 -> 11.2px over
+         Dropping the title reclaims its width plus the gap (63.3px below 375,
+         85.4px above), which clears every one of those. 640px up keeps it.
+
+         Nothing is actually lost on a phone: the hero directly beneath the bar
+         reads "denizhoroz" in the largest type on the site. */
   .navbar-title {
-    @apply text-[0.625rem] font-bold min-[375px]:text-sm sm:text-lg lg:text-xl;
+    @apply hidden font-bold sm:block sm:text-lg lg:text-xl;
   }
 
   /* [!] was a top bar below lg and a fixed left rail from lg up. Now one layout
@@ -257,18 +263,38 @@
 
          NOTE: because this is `fixed`, content overflowing it does NOT show up in
          document.scrollWidth. Horizontal fit has to be checked against the
-         children's own left/right edges, not the document. */
+         children's own left/right edges, not the document.
+
+     [!] border-b lives HERE, not on .navbar-inner, so the rule spans the whole
+         page rather than stopping at the shared measure. The container is
+         `inset-x-0`, i.e. edge to edge, and it carries no padding of its own --
+         .navbar-inner's py-2 sets the height -- so the border still lands
+         exactly at the bottom of the bar. Same 1px border-edge as .button and
+         .projectbox. */
   .navbar-container {
-    @apply fixed inset-x-0 top-0 z-[100] bg-bg py-2;
+    @apply fixed inset-x-0 top-0 z-[100] border-b border-edge bg-bg;
   }
 
   /* [!] new. Holds the bar's contents to the same measure and the same gutter as
          .page-block, which is what makes the title sit exactly above the left
          content edge and the last link above the right one. justify-between is
-         what pushes them to those two edges. */
+         what pushes them to those two edges.
+     [!] the height lives here rather than on .navbar-container, and that is what
+         lets the container carry a full-bleed border-b that still sits at the
+         true bottom of the bar: the inner defines the height, the container just
+         draws the line across the page.
+         min-h-[var(--bar-height)] rather than py-2 -- same 60px, but now stated
+         as a height the footer can read too, instead of padding around a 44px
+         link that the footer would have had to guess at. items-center does the
+         vertical centring that the padding used to.
+     [!] justify-center below sm, justify-between from sm up. The title is hidden
+         below sm, and justify-between with a single remaining child pins it to
+         the LEFT -- the nav would jump to the left edge on phones. Centring the
+         lone nav is both correct and what it should look like there. */
   .navbar-inner {
-    @apply mx-auto flex w-full max-w-measure flex-row items-center
-           justify-between gap-2 px-3 sm:px-5;
+    @apply mx-auto flex min-h-[var(--bar-height)] w-full max-w-measure
+           flex-row items-center justify-center gap-2 px-3
+           sm:justify-between sm:px-5;
   }
 
   /* [!] the pill is gone: no border, no bg-surface, no px/py. Also gone is the
@@ -318,6 +344,24 @@
          vs (1,0,1). */
   #navbar a:hover {
     @apply cursor-pointer underline decoration-2 underline-offset-4;
+  }
+
+  /* [!] new. The theme button. Not covered by `#navbar a` -- it is a <button>,
+         deliberately, since it performs an action rather than navigating.
+         min-h-11/min-w-11 gives it the same 44x44 target as the links.
+         Hover is a colour shift to --color-edge rather than the links'
+         underline: there is no text to underline. Edge is the one accent that
+         clears 3:1 against the page in BOTH themes (3.99:1 light, 6.25:1 dark),
+         which a graphical control needs. */
+  .theme-toggle {
+    @apply flex min-h-11 min-w-11 cursor-pointer items-center justify-center
+           rounded text-ink transition-colors duration-200 hover:text-edge;
+  }
+
+  /* currentColor on the svg means this size rule is all the icon needs -- the
+     colour comes from .theme-toggle and follows the theme automatically. */
+  .theme-icon {
+    @apply h-5 w-5;
   }
 
   /* [!] Applied by Link's `active_class`, which also emits aria-current="page".

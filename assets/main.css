@@ -24,6 +24,57 @@
        The rendered bar must stay within this budget or content slides under it.
        Measured: 44px link (min-h-11) + 16px container py-2 = ~60px of 72px. */
     --nav-clearance: 4.5rem;
+
+    /* Content height of the navbar -- and of the footer, which is the same bar
+       at the other end of the page. 44px (the link touch target) + 16px.
+       Both .navbar-inner and the footer read this, so the two cannot drift apart.
+       --nav-clearance must stay >= this plus the 1px rule, or content slides
+       under the fixed bar: 60 + 1 = 61 against 72. */
+    --bar-height: 3.75rem;
+
+    /* Light is the default, so the light values stay where they are: in
+       tailwind.css's @theme. Only the dark overrides live here. */
+    color-scheme: light;
+}
+
+/* Dark palette.
+   ---------------------------------------------------------------------------
+   Supplied as text / background / primary / secondary / accent, mapped onto the
+   same roles the light palette uses. Two differences from light:
+
+     --color-edge is the accent itself. In light mode #be9241 on the page is
+     2.66:1 and had to be darkened to #9a7433 to clear 3:1 for borders. On this
+     dark background the same #be9241 measures 6.25:1, so the darkened variant is
+     not needed and would only mute it.
+
+     --color-surface / --color-cream are derived, as in light mode: the supplied
+     set has no card surface. Same 1.1:1-ish tint relationship to the background,
+     so cards read the same way in both themes.
+
+   Contrast measured against WCAG 2.1:
+     ink on bg        13.21:1  AAA
+     ink on surface   11.69:1  AAA
+     strong on bg     13.84:1  AAA
+     subtle on bg     13.11:1  AAA
+     edge on bg        6.25:1  AA   (comfortably past the 3:1 non-text minimum)
+     edge on surface   5.53:1  AA
+
+   This selector is (0,2,0) against @theme's (0,1,0) `:root`, so it wins on
+   specificity and does not depend on source or layer order.
+   --------------------------------------------------------------------------- */
+:root[data-theme="dark"] {
+    --color-ink: #e2ddcb;
+    --color-strong: #e3e2d9;
+    --color-subtle: #ddddcf;
+    --color-accent: #be9241;
+    --color-edge: #be9241;
+    --color-bg: #1f1700;
+    --color-surface: #2a2109;
+    --color-cream: #3a2f14;
+
+    /* Tells the browser to render its own furniture -- scrollbars, form
+       controls, the flash before paint -- dark as well. */
+    color-scheme: dark;
 }
 
 html {

@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::Route;
+use crate::{Route, ThemeToggle};
 
 // Shared navbar component.
 // Scrolls to an in-page section once the router has actually rendered it.
@@ -83,6 +83,12 @@ pub fn Navbar() -> Element {
                     a { href: about_href, onclick: jump("aboutme"), "who am i?" }
                     Link { to: Route::MyWorksPage {}, active_class: "nav-active", "my works" }
                     a { href: reach_href, onclick: jump("reachme"), "reach me" }
+
+                    // Inside the nav rather than a third child of .navbar-inner:
+                    // that wrapper is justify-between, so a third child would
+                    // pull the links away from the right edge they are aligned
+                    // to. Here the toggle simply becomes the last item.
+                    ThemeToggle {}
                 }
             }
         }
