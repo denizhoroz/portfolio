@@ -1,0 +1,11 @@
+{
+    "id": 6,
+    "slug": "fusionfm",
+    "title": "FusionFM",
+    "description": "A Windows 98 themed website which includes a radio for listening to music and a messaging app to chat with other people on the website.",
+    "image_key": "fusionfm.png",
+    "gitlink": "https://github.com/denizhoroz/fusionfm",
+    "tech": ["Javascript", "Node.js"],
+    "finish_date": "2024-11-09",
+    "markdown_key": "fusionfm.md"
+}

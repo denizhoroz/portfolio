@@ -1,0 +1,11 @@
+{
+    "id": 5,
+    "slug": "teknofest-address-resolution-2025",
+    "title": "Address Resolution Project",
+    "description": "Built an address resolution pipeline that processes noisy and unstructured address texts, then uses hybrid NLP pipelines to find an address value in TEKNOFEST 2025 Address Resolution Hackathon.",
+    "image_key": "teknofest-address-resolution-2025.png",
+    "gitlink": "https://github.com/denizhoroz/address-resolution",
+    "tech": ["Python", "Regex", "NLP", "BERT", "TF-IDF", "FAISS"],
+    "finish_date": "2025-08-17",
+    "markdown_key": "teknofest-address-resolution-2025.md"
+}

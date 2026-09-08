@@ -8,7 +8,7 @@
    the html/body base, and @theme would tree-shake the unreferenced ones away,
    leaving a transparent background. */
 @theme static {
-  /* Light palette. Dark lives in assets/main.css under :root[data-theme="dark"].
+  /* Light palette. Dark lives below in this file under :root[data-theme="dark"].
 
      --color-surface / --color-edge / --color-cream are derived, not supplied:
      the source palette has no light card surface and no border colour that
@@ -28,7 +28,7 @@
   --color-surface: #f7ecd0;
   --color-cream: #e8dab4;
 
-  --font-display: "Google Sans", Tahoma, Geneva, Verdana, sans-serif;
+  --font-display: "Jetbrains Mono", Tahoma, Geneva, Verdana, sans-serif;
 
   /* The one width every region obeys -- prose, card grid, project image, navbar
      contents. --container-* is the namespace Tailwind v4 builds max-w-* from,
@@ -38,6 +38,36 @@
   --text-display: clamp(2.5rem, 9vw, 5rem);
   --text-section: clamp(1.75rem, 5vw, 2.5rem);
   --text-lead: clamp(1.05rem, 2.2vw, 1.5rem);
+}
+
+/* Light mode's counterpart to the dark block below. Not a @theme token --
+   color-scheme is a real declaration and @theme takes tokens only. */
+:root {
+  color-scheme: light;
+}
+
+/* Dark palette. Light is in @theme above; only the overrides are here. This
+   selector is (0,2,0) against @theme's (0,1,0) `:root`, so it wins on
+   specificity and does not depend on source or layer order. Tailwind emits
+   plain CSS like this unlayered, which also beats @theme's layered output.
+
+   --color-edge is the accent itself here. Light mode has to darken #be9241 to
+   #9a7433 to clear 3:1; on this background the original measures 6.25:1.
+
+   Contrast (WCAG 2.1):
+     ink on bg 13.21   ink on surface 11.69   strong on bg 13.84
+     edge on bg 6.25   edge on surface 5.53 */
+:root[data-theme="dark"] {
+  --color-ink: #e2ddcb;
+  --color-strong: #e3e2d9;
+  --color-subtle: #ddddcf;
+  --color-accent: #be9241;
+  --color-edge: #be9241;
+  --color-bg: #1d1709;
+  --color-surface: #2a2109;
+  --color-cream: #3a2f14;
+
+  color-scheme: dark;
 }
 
 /* These live in @layer components so per-instance utilities in the rsx can

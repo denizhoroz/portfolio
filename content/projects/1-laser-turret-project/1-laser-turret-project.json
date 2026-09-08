@@ -1,0 +1,11 @@
+{
+    "id": 1,
+    "slug": "laser-turret-project",
+    "title": "Laser Turret Project",
+    "description": "An affordable, fully autonomous laser turret that detects, tracks, and fires at targets using AI-based image processing. Built as a Mechatronics Engineering graduation project at Istanbul Ticaret University.",
+    "image_key": "laser-turret-project.png",
+    "gitlink": "https://github.com/denizhoroz/laser-turret-project",
+    "tech": ["Python", "FastAPI", "Ultralytics YOLO", "Javascript", "Arduino (C/C++)"],
+    "finish_date": "2026-01-01",
+    "markdown_key": "laser-turret-project.md"
+}

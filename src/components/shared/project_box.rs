@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::data::{Project, asset_for};
+use crate::data::Project;
 
 // The props type is deliberately not the data model: `Project` must be able to
 // arrive from a database and `Asset` cannot, so the asset is resolved here at
@@ -14,14 +14,14 @@ pub struct ProjectBoxProps {
 pub fn ProjectBox(props: ProjectBoxProps) -> Element {
     let proj = &props.project;
 
-    // `asset_for` returns None only on an image_key we don't bundle. Keep the
-    // box -- it carries the aspect-ratio that reserves the space -- but render
-    // no <img>, rather than showing the browser's broken-image icon.
-    let image = match asset_for(&proj.image_key) {
+    // `image_src` is None only when the project folder has no image file. Keep
+    // the box -- it carries the aspect-ratio that reserves the space -- but
+    // render no <img>, rather than showing the browser's broken-image icon.
+    let image = match &proj.image_src {
         Some(src) => rsx! {
             img {
                 class: "image-portrait",
-                src: src,
+                src: "{src}",
                 alt: "Screenshot of {proj.title}"
             }
         },

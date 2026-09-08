@@ -1,0 +1,11 @@
+{
+    "id": 4,
+    "slug": "btk-datathon-2025",
+    "title": "E-Commerce Session Value Prediction Project",
+    "description": "Built an e-commerce prediction pipeline to generate features and parse data using Pandas, and applies random forest classifier to predict session value in BTK Datathon 2025.",
+    "image_key": "btk-datathon-2025.jpg",
+    "gitlink": "https://github.com/denizhoroz/btk-datathon-2025",
+    "tech": ["Python", "Pandas", "Matplotlib", "XGBoost", "LightGBM", "Scikit-learn"],
+    "finish_date": "2025-09-28",
+    "markdown_key": "btk-datathon-2025.md"
+}

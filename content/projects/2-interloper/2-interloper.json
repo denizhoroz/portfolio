@@ -1,0 +1,11 @@
+{
+    "id": 2,
+    "slug": "interloper",
+    "title": "Interloper - Language Learning Platform",
+    "description": "A language learning platform which you can practice in with simulated environments.",
+    "image_key": "interloper.png",
+    "gitlink": "https://github.com/denizhoroz/interloper",
+    "tech": ["Python", "Flask", "Langchain", "Javascript"],
+    "finish_date": "2025-06-14",
+    "markdown_key": "interloper.md"
+}

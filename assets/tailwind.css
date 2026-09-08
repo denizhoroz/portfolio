@@ -37,7 +37,7 @@
     --color-bg: #fff7e0;
     --color-surface: #f7ecd0;
     --color-cream: #e8dab4;
-    --font-display: "Google Sans", Tahoma, Geneva, Verdana, sans-serif;
+    --font-display: "Jetbrains Mono", Tahoma, Geneva, Verdana, sans-serif;
     --container-measure: 64rem;
     --text-display: clamp(2.5rem, 9vw, 5rem);
     --text-section: clamp(1.75rem, 5vw, 2.5rem);
@@ -388,6 +388,20 @@
       line-height: var(--tw-leading, var(--text-2xl--line-height));
     }
   }
+}
+:root {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  --color-ink: #e2ddcb;
+  --color-strong: #e3e2d9;
+  --color-subtle: #ddddcf;
+  --color-accent: #be9241;
+  --color-edge: #be9241;
+  --color-bg: #1d1709;
+  --color-surface: #2a2109;
+  --color-cream: #3a2f14;
+  color-scheme: dark;
 }
 @layer components {
   .page-block {

@@ -17,31 +17,6 @@
        Must stay <= --nav-clearance minus the 1px rule, or content slides under
        the fixed bar: 60 + 1 = 61 against 72. */
     --bar-height: 3.75rem;
-
-    color-scheme: light;
-}
-
-/* Dark palette. Light lives in tailwind.css's @theme; only the overrides are
-   here. This selector is (0,2,0) against @theme's (0,1,0) `:root`, so it wins
-   on specificity and does not depend on source or layer order.
-
-   --color-edge is the accent itself here. Light mode has to darken #be9241 to
-   #9a7433 to clear 3:1; on this background the original measures 6.25:1.
-
-   Contrast (WCAG 2.1):
-     ink on bg 13.21   ink on surface 11.69   strong on bg 13.84
-     edge on bg 6.25   edge on surface 5.53 */
-:root[data-theme="dark"] {
-    --color-ink: #e2ddcb;
-    --color-strong: #e3e2d9;
-    --color-subtle: #ddddcf;
-    --color-accent: #be9241;
-    --color-edge: #be9241;
-    --color-bg: #1f1700;
-    --color-surface: #2a2109;
-    --color-cream: #3a2f14;
-
-    color-scheme: dark;
 }
 
 html {

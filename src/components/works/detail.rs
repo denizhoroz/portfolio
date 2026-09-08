@@ -39,14 +39,14 @@ pub fn WorkPage(slug: String) -> Element {
         },
 
         Some(Some(p)) => {
-            // asset_for returns None only on a key we don't bundle. Keep the box
-            // -- it carries the aspect-ratio that reserves space -- and render no
-            // <img>, rather than a broken-image icon.
-            let image = match crate::data::asset_for(&p.image_key) {
+            // image_src is None only when the project folder has no image file.
+            // Keep the box -- it carries the aspect-ratio that reserves space --
+            // and render no <img>, rather than a broken-image icon.
+            let image = match &p.image_src {
                 Some(src) => rsx! {
                     img {
                         class: "project-big-image-container",
-                        src: src,
+                        src: "{src}",
                         alt: "Screenshot of {p.title}"
                     }
                 },

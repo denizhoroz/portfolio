@@ -1,0 +1,11 @@
+{
+    "id": 3,
+    "slug": "journal-lite",
+    "title": "Journal Lite",
+    "description": "A lightweight Python journaling application designed to be fast, simple, and focused on daily entries with useful productivity features.",
+    "image_key": "journal-lite.png",
+    "gitlink": "https://github.com/denizhoroz/journal-lite",
+    "tech": ["Python", "Qt", "SQLite"],
+    "finish_date": "2025-03-22",
+    "markdown_key": "journal-lite.md"
+}
