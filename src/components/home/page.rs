@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{AboutMe, Footer, Hero, ReachMe, Works, Articles};
+use crate::{AboutMe, Hero, ReachMe, Works, Articles};
 
 /// Home page -- composition only; each section owns its own file.
 #[component]
@@ -18,11 +18,6 @@ pub fn Home() -> Element {
             Works {}
             Articles {}
             ReachMe {}
-        }
-
-        div {
-            class: "pt-[clamp(4rem,12vw,10rem)]",
-            Footer {}
         }
     }
 }

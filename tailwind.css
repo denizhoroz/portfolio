@@ -4,6 +4,20 @@
    are invisible without this. */
 @source "./src";
 
+/* target/ holds the compiled wasm and every previously hashed copy of this
+   file, all of which carry class names as plain strings. Tailwind was reading
+   them and emitting utilities for classes the rsx no longer uses, so a class
+   deleted from the source kept shipping until the artifact holding it was
+   rebuilt. .gitignore does not cover it here: naming ./src as an explicit
+   @source turns off ignore-file handling for the scan. */
+@source not "./target";
+
+/* And not this file's own output. Tailwind scans the project, assets/ is in the
+   project, and the generated stylesheet is full of class names -- so each build
+   was reading the previous build's output and carrying its utilities forward.
+   Two builds of identical source did not agree. */
+@source not "./assets/tailwind.css";
+
 /* `static`, not plain @theme: assets/main.css reads these tokens with var() for
    the html/body base, and @theme would tree-shake the unreferenced ones away,
    leaving a transparent background. */
@@ -34,10 +48,11 @@
   --font-display: "JetBrains Mono", ui-monospace, "Cascadia Mono", Menlo,
                   Consolas, monospace;
 
-  /* Project write-ups only -- see .markdown-body. A second face for long-form
-     content, so a body reads as a document rather than as more chrome. Same
-     monospace fallbacks as above: whichever face fails to load, the metrics
-     stay in the same family of shapes. */
+  /* The article/write-up face -- .markdown-body, and the blurb in an article
+     row. A second face for the words of a piece rather than the chrome around
+     them, so a body reads as a document. Same monospace fallbacks as above:
+     whichever face fails to load, the metrics stay in the same family of
+     shapes. */
   --font-content: "Fragment Mono", ui-monospace, "Cascadia Mono", Menlo,
                   Consolas, monospace;
 
@@ -100,9 +115,25 @@
 
      py-[20px] in px, not py-5: the 80% root would render 1.25rem as 16px, and
      this is a fixed 20px of breathing room rather than a value on the type
-     scale. Vertical only, so the footer's rule still reaches both edges. */
+     scale. Vertical only, so the footer's rule still reaches both edges.
+
+     Padding only -- deliberately no min-height and no flex. The footer is not
+     this element's problem: it is rendered by the layout, outside and after
+     this wrapper. */
   .page-pad {
     @apply py-[20px];
+  }
+
+  /* Wraps the route and the footer, on every page including Home.
+     100dvh minus the nav clearance is exactly the space below the fixed navbar,
+     because body already carries that clearance as padding-top -- so this is
+     one full screen, not one screen plus a bar.
+
+     dvh rather than vh so collapsing mobile browser chrome does not leave a
+     strip of background under the footer, which is the whole failure this
+     exists to prevent. min-height, not height: a long page grows past it. */
+  .page-shell {
+    @apply flex min-h-[calc(100dvh_-_var(--nav-clearance))] flex-col;
   }
 
   /* Home's four sections only; /works must keep its natural height. dvh so
@@ -163,6 +194,44 @@
            motion-reduce:transition-none;
   }
 
+  /* The article list's answer to .project-container. One column at every width
+     on purpose -- a row IS the layout, so there is no breakpoint at which two
+     of them side by side would still be rows. */
+  .article-container {
+    @apply flex w-full flex-col gap-6;
+  }
+
+  /* .projectbox's sibling, and the hover/focus behaviour is copied from it
+     verbatim so a card and a row respond identically. See the comments there
+     for why the lift is gated with motion-safe: rather than undone with
+     motion-reduce:.
+
+     No image and no min-height, unlike .projectbox. Cards in a grid row must
+     agree on a height or the row ragged-edges; stacked rows have no such
+     neighbour, so each is exactly as tall as its own four lines of text. That
+     is the whole reason the row stays short.
+
+     text-left overrides .page-block's text-center -- both are components-layer
+     rules, and this one is later in the file. min-w-0 so a long unbroken word
+     wraps instead of forcing the row wider than its column. */
+  .article-row {
+    @apply flex w-full min-w-0 flex-col gap-2 rounded-lg border border-edge
+           bg-surface px-4 py-3 text-left
+           transition duration-200 ease-out
+           motion-safe:group-hover:-translate-y-1
+           motion-safe:group-focus-visible:-translate-y-1
+           group-hover:shadow-lg group-focus-visible:shadow-lg
+           motion-reduce:transition-none;
+  }
+
+  /* items-baseline, not items-center: the title and the date are different
+     sizes, and aligning their boxes rather than their text leaves the date
+     floating. gap-4 is the minimum space between them when a long title runs
+     the full width. */
+  .article-row-head {
+    @apply flex w-full flex-row items-baseline justify-between gap-4;
+  }
+
   .skeleton {
     @apply rounded-lg bg-cream/60 motion-safe:animate-pulse;
   }
@@ -185,6 +254,19 @@
 
   .social-icon {
     @apply w-10;
+  }
+
+  /* Icon-only, so the tap area has to come from padding rather than from a
+     label: .social-icon is w-10, which the 80% root renders at 32px, and p-1.5
+     adds 6px a side for the 44px minimum. No background or border, so the
+     affordance is the opacity shift; :focus-visible in main.css still rings it.
+     One `transition`, not transition-opacity + transition-transform -- both set
+     transition-property and the second silently wins. */
+  .social-icon-link {
+    @apply flex items-center justify-center p-1.5
+           transition duration-200 ease-out
+           hover:opacity-60 focus-visible:opacity-60 active:scale-[0.98]
+           motion-reduce:transition-none;
   }
 
   /* Sits under the title on a project page. text-lead would compete with the

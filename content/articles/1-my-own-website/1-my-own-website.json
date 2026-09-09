@@ -1,0 +1,9 @@
+{
+    "id": 1,
+    "slug": "my-own-website",
+    "title": "My Own Portfolio/Blog Website",
+    "description": "First article on this website, talking about the website itself.",
+    "tags": ["Portfolio", "Web Development"],
+    "publish_date": "2026-09-09",
+    "markdown_key": "my-own-website.md"
+}

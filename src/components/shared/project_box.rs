@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::data::Project;
+use crate::{data::Project, format_date};
 
 // The props type is deliberately not the data model: `Project` must be able to
 // arrive from a database and `Asset` cannot, so the asset is resolved here at
@@ -42,6 +42,14 @@ pub fn ProjectBox(props: ProjectBoxProps) -> Element {
             h3 {
                 class: "text-xl font-bold text-strong",
                 "{proj.title}"
+            }
+
+            // Same <time> element and .project-date class the detail page and
+            // the article row use, so a date reads identically everywhere.
+            time {
+                class: "project-date",
+                datetime: "{proj.finish_date}",
+                "{format_date(&proj.finish_date)}"
             }
 
             // Clamped so a long description can't push the card out of shape;

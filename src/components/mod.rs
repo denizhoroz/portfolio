@@ -9,5 +9,8 @@ pub use home::*;
 mod works;
 pub use works::*;
 
+mod articles;
+pub use articles::*;
+
 mod shared;
 pub use shared::*;

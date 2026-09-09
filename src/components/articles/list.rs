@@ -1,25 +1,25 @@
 use dioxus::prelude::*;
 
-use crate::{ProjectGrid, Route};
+use crate::{ArticleList, Route};
 
 /// Placeholders while loading -- the expected count, not a promise.
-const SKELETON_COUNT: usize = 6;
+const SKELETON_COUNT: usize = 4;
 
 #[component]
-pub fn WorksPage() -> Element {
+pub fn ArticlesPage() -> Element {
     rsx! {
         div {
             class: "page-block",
 
             Link { class: "block-desc button mb-[20px]", to: Route::Home {}, "go back" }
 
-            h1 { class: "block-title m-2.5", "my works" }
+            h1 { class: "block-title m-2.5", "my articles" }
 
-            ProjectGrid {
+            ArticleList {
                 skeleton_count: SKELETON_COUNT,
-                empty: "No projects here yet.",
+                empty: "No articles here yet.",
             }
         }
-        
+
     }
 }

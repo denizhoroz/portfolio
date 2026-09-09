@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{Route, ThemeToggle};
+use crate::{Footer, Route, ThemeToggle};
 
 // Scrolls to an in-page section once the router has actually rendered it. After
 // a route push Home mounts on a later frame, so the target does not exist at
@@ -80,10 +80,21 @@ pub fn Navbar() -> Element {
                 nav {
                     id: "navbar",
                     // active_class also sets aria-current="page" for screen readers
-                    Link { to: Route::Home {}, active_class: "nav-active", "home" }
+                    // Not active_class, which the other three keep: it matches
+                    // on the whole URL, and "who am i?" / "reach me" write
+                    // "/#aboutme" and "/#reachme" into it. That stops matching
+                    // "/" and unbolds home while the reader is still on it.
+                    // on_home is the question actually being asked, and it
+                    // ignores the hash.
+                    Link {
+                        to: Route::Home {},
+                        class: if on_home { "nav-active" } else { "" },
+                        aria_current: if on_home { "page" } else { "false" },
+                        "home"
+                    }
                     a { href: about_href, onclick: jump("aboutme"), "who am i?" }
                     Link { to: Route::WorksPage {}, active_class: "nav-active", "works" }
-                    Link { to: Route::WorksPage {}, active_class: "nav-active", "articles" }
+                    Link { to: Route::ArticlesPage {}, active_class: "nav-active", "articles" }
                     a { href: reach_href, onclick: jump("reachme"), "reach me" }
 
                     // Inside the nav, not a third child of .navbar-inner --
@@ -92,9 +103,34 @@ pub fn Navbar() -> Element {
                 }
             }
         }
+        // One column, at least one screen tall, holding the route and the
+        // footer. The height is what stops a short page -- /articles with two
+        // rows, a project page with no body -- ending partway up the viewport
+        // with the page background showing beneath the footer.
         div {
-            class: outlet_class,
-            Outlet::<Route> {}
+            class: "page-shell",
+
+            div {
+                class: outlet_class,
+                Outlet::<Route> {}
+            }
+
+            // Every route ends here. Rendered by the layout rather than by each
+            // page so a route added later cannot ship without one, and so the
+            // spacing above it is defined in a single place.
+            //
+            // Deliberately in normal flow, not fixed like the navbar: this
+            // marks the end of the content, and a bar pinned to the bottom of
+            // the viewport would claim that the page ends wherever the reader
+            // happens to have stopped scrolling.
+            //
+            // mt-auto takes whatever height the route above did not use, so the
+            // footer sits on the bottom edge of a short page and immediately
+            // after the content of a long one.
+            div {
+                class: "mt-auto pt-[clamp(4rem,12vw,10rem)]",
+                Footer {}
+            }
         }
     }
 }

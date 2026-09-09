@@ -34,6 +34,19 @@ html {
 
     scroll-behavior: smooth;
 
+    /* Reserve the scrollbar's width whether or not there is one to show.
+
+       Without this, a page tall enough to scroll is ~15px narrower than one
+       that is not, and every centred thing on it -- the page title, the "go
+       back" button, the footer line -- sits ~7px left of where the same element
+       sits on a short page. /works scrolls and /articles does not, so the two
+       did not agree.
+
+       Cheaper than the alternatives: `overflow-y: scroll` shows a dead
+       scrollbar track on short pages, and centring against 100vw instead lets
+       content slide under the bar. */
+    scrollbar-gutter: stable;
+
     /* Native hash navigation only -- keeps #reachme from landing under the bar.
        There is no section snapping: CSS scroll-snap was tried in both modes and
        neither worked, and the JS controller that replaced it was stripped. Do
@@ -56,6 +69,22 @@ body {
        one definition serves both the content and the fixed navbar, which a body
        margin cannot reach. padding-top clears the bar. */
     padding-top: var(--nav-clearance);
+}
+
+/* Set by the theme toggle for the frame in which data-theme flips, then
+   removed. Without it the swap is visibly staggered: body's background-color has
+   no transition and repaints at once, while every element carrying
+   transition-colors -- .button, .projectbox, .article-row, the nav links, the
+   toggle itself -- eases to its new colour over 200ms and trails behind.
+
+   Those transitions exist for hover, which is why the fix suppresses them for
+   one frame rather than removing them. !important and the universal selector
+   because they are set by utilities in the components layer, which a plain
+   rule here cannot outrank. */
+:root.theme-switching *,
+:root.theme-switching *::before,
+:root.theme-switching *::after {
+    transition: none !important;
 }
 
 /* The UA default ring is near-invisible against this palette. */

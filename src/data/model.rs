@@ -39,3 +39,35 @@ pub struct Project {
     /// body, and the detail page renders nothing.
     pub markdown_html: String,
 }
+
+/// An article, as plain data.
+///
+/// The projects' sibling, and deliberately not a reuse of [`Project`]: an
+/// article has no repository to link and no cover image, is dated by
+/// publication rather than completion, and is tagged by subject rather than by
+/// stack. One type carrying both would leave half its fields empty whichever
+/// kind it held.
+///
+/// The fields mirror `content/articles/<id>-<slug>/<id>-<slug>.json` one for
+/// one -- `build.rs` builds these values straight from those files.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Article {
+    /// Stable identity and display order, ascending. Names the content folder
+    /// on disk, exactly as [`Project::id`] does.
+    pub id: u32,
+
+    pub slug: String,
+    pub title: String,
+    pub description: String,
+
+    /// Subject tags, rendered with the same `.tech-tag` pill as a project's
+    /// stack. Free-form; nothing validates them.
+    pub tags: Vec<String>,
+
+    /// ISO `YYYY-MM-DD`, as written in the content file.
+    pub publish_date: String,
+
+    /// The article's body, already rendered to HTML by `build.rs`. Empty means
+    /// the article has no body yet. See [`Project::markdown_html`].
+    pub markdown_html: String,
+}

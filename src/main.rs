@@ -19,7 +19,13 @@ enum Route {
     WorksPage {},
 
     #[route("/works/:slug")]
-    WorkPage { slug: String }
+    WorkPage { slug: String },
+
+    #[route("/articles")]
+    ArticlesPage {},
+
+    #[route("/articles/:slug")]
+    ArticlePage { slug: String }
 }
 
 // Document-level assets; everything else is declared next to the component that

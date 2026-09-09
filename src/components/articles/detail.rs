@@ -1,76 +1,60 @@
 use dioxus::prelude::*;
 
-use crate::{Route, SkeletonDetail, data::fetch_project, format_date};
+use crate::{Route, SkeletonArticleDetail, data::fetch_article, format_date};
 
-const GITHUB_ICON: Asset = asset!("/assets/icons/github.svg");
-
+/// `/articles/:slug` -- one article, body included.
+///
+/// The projects' counterpart is `works::detail`, and the shape is the same:
+/// resource, three states, then the rendered `markdown_html`. What is missing
+/// against it is missing by design -- an article is text, so there is no cover
+/// image to reserve space for and no repository to link.
 #[component]
-pub fn WorkPage(slug: String) -> Element {
+pub fn ArticlePage(slug: String) -> Element {
     // use_reactive! is load-bearing: use_resource captures its closure once, and
-    // /works/a -> /works/b reuses this component with only the prop swapped, so
-    // without it the future keeps fetching the slug it was first built with.
-    let project = use_resource(use_reactive!(|slug| async move {
-        fetch_project(&slug).await
+    // /articles/a -> /articles/b reuses this component with only the prop
+    // swapped, so without it the future keeps fetching the slug it was first
+    // built with.
+    let article = use_resource(use_reactive!(|slug| async move {
+        fetch_article(&slug).await
     }));
-    let state = project.value();
+    let state = article.value();
 
     // Three states, not two: Some(None) is a real 404, None is "still asking".
-    // Collapsing them flashes "Project not found" on every page load.
+    // Collapsing them flashes "Article not found" on every page load.
     // Bound to a local rather than returned directly: the match borrows the read
     // guard, and as a tail expression that borrow outlives `state`.
     let body = match &*state.read() {
-        None => rsx! { SkeletonDetail {} },
+        None => rsx! { SkeletonArticleDetail {} },
 
         Some(None) => rsx! {
             div {
                 class: "page-block gap-6",
 
-                h1 { class: "block-subtitle", "Project not found" }
+                h1 { class: "block-subtitle", "Article not found" }
 
                 p {
                     class: "block-desc zen-content",
-                    "There is no project at this address. It may have been renamed, or the link may be out of date."
+                    "There is no article at this address. It may have been renamed, or the link may be out of date."
                 }
             }
         },
 
-        Some(Some(p)) => {
-
-
-            let image = match &p.image_src {
-                Some(src) => rsx! {
-                    img {
-                        class: "project-big-image-container",
-                        src: "{src}",
-                        alt: "Screenshot of {p.title}"
-                    }
-                },
-                None => rsx! {
-                    div {
-                        class: "project-big-image-container aspect-[16/10]",
-                        aria_hidden: "true"
-                    }
-                },
-            };
-
-            // Rendered by build.rs, never by a user: see `Project::markdown_html`.
-            let markdown = (!p.markdown_html.is_empty()).then(|| {
+        Some(Some(a)) => {
+            // Rendered by build.rs, never by a user: see `Article::markdown_html`.
+            let markdown = (!a.markdown_html.is_empty()).then(|| {
                 rsx! {
                     hr { class: "section-rule" }
 
                     div {
                         class: "markdown-body",
-                        dangerous_inner_html: "{p.markdown_html}"
+                        dangerous_inner_html: "{a.markdown_html}"
                     }
                 }
             });
 
             rsx! {
-
                 div {
                     class: "page-block gap-8",
-
-                    {image}
 
                     // Title hard left, date hard right, on one line. Stacked
                     // below sm: .block-subtitle is clamp(2rem, 5vw, 2.5rem), so
@@ -79,7 +63,7 @@ pub fn WorkPage(slug: String) -> Element {
                     div {
                         class: "flex w-full flex-col gap-2 text-left sm:flex-row sm:items-start sm:justify-between sm:gap-4",
 
-                        h1 { class: "block-subtitle", "{p.title}" }
+                        h1 { class: "block-subtitle", "{a.title}" }
 
                         // <time> so the machine-readable ISO value survives even
                         // though the text beside it is the human form.
@@ -90,8 +74,8 @@ pub fn WorkPage(slug: String) -> Element {
                         // the bottom of the row.
                         time {
                             class: "project-date shrink-0 whitespace-nowrap",
-                            datetime: "{p.finish_date}",
-                            "{format_date(&p.finish_date)}"
+                            datetime: "{a.publish_date}",
+                            "{format_date(&a.publish_date)}"
                         }
                     }
 
@@ -99,20 +83,16 @@ pub fn WorkPage(slug: String) -> Element {
                     // (with hyphens-auto to keep the rag off), and a utility
                     // here would beat it -- utilities are layered after
                     // components.
-                    p { class: "block-desc zen-content", "{p.description}" }
+                    p { class: "block-desc zen-content", "{a.description}" }
 
+                    // Hashtags, not a stack list -- an article is tagged by
+                    // subject. Same `#` prefix and same pill as `ArticleRow`,
+                    // so a tag reads the same in the list and on the page.
                     div {
                         class: "tech-list",
-                        for t in p.tech.iter() {
-                            span { class: "tech-tag", key: "{t}", "{t}" }
+                        for t in a.tags.iter() {
+                            span { class: "tech-tag", key: "{t}", "#{t}" }
                         }
-                    }
-
-                    a {
-                        class: "block-desc button",
-                        href: "{p.gitlink}",
-                        img { src: GITHUB_ICON, alt: "", class: "social-icon" }
-                        "GitHub Link"
                     }
 
                     {markdown}
@@ -128,7 +108,7 @@ pub fn WorkPage(slug: String) -> Element {
         div {
             class: "page-block",
 
-            Link { class: "block-desc button mb-[20px]", to: Route::WorksPage {}, "go back" }
+            Link { class: "block-desc button mb-[20px]", to: Route::ArticlesPage {}, "go back" }
         }
 
         {body}

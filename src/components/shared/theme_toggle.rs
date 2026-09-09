@@ -8,10 +8,18 @@ use dioxus::prelude::*;
 // an async function and returns whatever it returns.
 const TOGGLE_JS: &str = r#"
   const el = document.documentElement;
+  // See .theme-switching in main.css: suppresses colour transitions so the
+  // whole page repaints on one frame instead of the background snapping and
+  // every button easing after it. Two rAFs -- one to get past the frame that
+  // applies the new colours, one to be sure it has been painted.
+  el.classList.add("theme-switching");
   const dark = el.dataset.theme !== "dark";
   el.dataset.theme = dark ? "dark" : "light";
   // A failed write must not stop the theme from changing for this session.
   try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch (_) {}
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    el.classList.remove("theme-switching");
+  }));
   return dark;
 "#;
 

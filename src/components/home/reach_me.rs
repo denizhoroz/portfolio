@@ -43,29 +43,38 @@ pub fn ReachMe() -> Element {
                             class: "block-subtitle",
                             "my socials"
                         }
-                        a {
-                            class: "social-anchor button",
-                            href: "https://github.com/denizhoroz",
-                            target: "_blank",
-                            rel: "noopener noreferrer",
-                            img { src: GITHUB_ICON, alt: "", class: "social-icon"}
-                            "github"
-                        }
-                        a {
-                            class: "social-anchor button",
-                            href: "https://www.linkedin.com/in/denizhoroz",
-                            target: "_blank",
-                            rel: "noopener noreferrer",
-                            img { src: LINKEDIN_ICON, alt: "", class: "social-icon"}
-                            "linkedin"
-                        }
-                        a {
-                            class: "social-anchor button",
-                            href: "https://x.com/denizerenhoroz",
-                            target: "_blank",
-                            rel: "noopener noreferrer",
-                            img { src: X_ICON, alt: "", class: "social-icon"}
-                            "X"
+                        // Icon-only, so the name that was the link text now
+                        // lives on aria_label -- without it these three read as
+                        // "link" and nothing else. The img stays alt="": it is
+                        // decorative once the anchor carries the name, and a
+                        // second copy would have a screen reader say it twice.
+                        div {
+                            class: "flex flex-row items-center justify-center gap-2.5",
+
+                            a {
+                                class: "social-icon-link",
+                                href: "https://github.com/denizhoroz",
+                                target: "_blank",
+                                rel: "noopener noreferrer",
+                                aria_label: "GitHub",
+                                img { src: GITHUB_ICON, alt: "", class: "social-icon"}
+                            }
+                            a {
+                                class: "social-icon-link",
+                                href: "https://www.linkedin.com/in/denizhoroz",
+                                target: "_blank",
+                                rel: "noopener noreferrer",
+                                aria_label: "LinkedIn",
+                                img { src: LINKEDIN_ICON, alt: "", class: "social-icon"}
+                            }
+                            a {
+                                class: "social-icon-link",
+                                href: "https://x.com/denizerenhoroz",
+                                target: "_blank",
+                                rel: "noopener noreferrer",
+                                aria_label: "X",
+                                img { src: X_ICON, alt: "", class: "social-icon"}
+                            }
                         }
                     }
                 }
