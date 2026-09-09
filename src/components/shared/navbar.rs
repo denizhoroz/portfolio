@@ -2,6 +2,8 @@ use dioxus::prelude::*;
 
 use crate::{Footer, Route, ThemeToggle};
 
+const TITLE_ICON: Asset = asset!("/assets/icons/titleicon.svg");
+
 // Scrolls to an in-page section once the router has actually rendered it. After
 // a route push Home mounts on a later frame, so the target does not exist at
 // click time -- poll for it, then write the hash so the URL stays shareable.
@@ -23,6 +25,32 @@ const SCROLL_TO_SECTION_JS: &str = r#"
     }
   };
   requestAnimationFrame(go);
+})();
+"#;
+
+// Returns to the top of Home, for a click on "home" or on the brand mark.
+//
+// __HERE__ is whether Home was already the current route, and it decides both
+// halves of this.
+const SCROLL_TO_TOP_JS: &str = r#"
+(() => {
+  const here = __HERE__;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Smooth only when the reader is already on Home and can watch the page
+  // travel. Arriving from another route the content is being replaced anyway,
+  // so it lands at the top the way a real navigation would, without animating
+  // over a page swap.
+  window.scrollTo({ top: 0, left: 0, behavior: here && !reduce ? "smooth" : "auto" });
+
+  // Only when already on Home: "/#aboutme" or "/#reachme" may still be in the
+  // address bar from a nav jump, and the reader is no longer at that section.
+  // Coming from another route the router has just written a clean "/" itself.
+  // replaceState rather than push so the trip to the top is not a history entry
+  // of its own, and history.state is kept so the router's entry survives.
+  if (here) {
+    history.replaceState(history.state, "", "/");
+  }
 })();
 "#;
 
@@ -63,6 +91,30 @@ pub fn Navbar() -> Element {
         }
     };
 
+    // Clicking "home" or the brand mark. One gesture, two jobs, and neither is
+    // what a plain Link does on its own.
+    //
+    // Already on Home: the Link would ask the router to push the route it is
+    // already displaying. The router correctly treats that as no navigation, so
+    // nothing at all happens -- a reader sitting down in #reachme clicks "home"
+    // and the page does not move. onclick_only below is what stops the pointless
+    // push (it would otherwise stack a duplicate "/" entry on the back button),
+    // which leaves the scrolling to this.
+    //
+    // Coming from another route: the router swaps the page but never touches the
+    // viewport, and Home is four full-screen sections against a /works that is
+    // one screen of cards. A reader who had scrolled down keeps that offset and
+    // lands somewhere in the middle of Home rather than on the hero.
+    //
+    // Modifier and middle clicks never reach here -- Link returns before its
+    // onclick for those -- so ctrl-click still opens Home in a new tab.
+    let go_home = move |_evt: Event<MouseData>| {
+        let js = SCROLL_TO_TOP_JS.replace("__HERE__", if on_home { "true" } else { "false" });
+        spawn(async move {
+            _ = document::eval(&js).await;
+        });
+    };
+
     rsx! {
         div {
             class: "navbar-container",
@@ -72,9 +124,24 @@ pub fn Navbar() -> Element {
             div {
                 class: "navbar-inner",
 
-                div {
-                    class: "navbar-title",
-                    Link { to: Route::Home {}, "denizhoroz" }
+                // The mark is the whole brand now -- the "denizhoroz" wordmark
+                // that used to sit beside it is gone, and the Link wraps the
+                // image rather than standing next to it.
+                Link {
+                    class: "navbar-brand",
+                    to: Route::Home {},
+                    onclick: go_home,
+                    // Suppresses the router push when Home is already showing,
+                    // so clicking the mark on Home does not stack a duplicate
+                    // "/" onto the back button. Off elsewhere, so the push still
+                    // happens and go_home only resets the viewport after it.
+                    onclick_only: on_home,
+
+                    // alt must NOT be empty here, unlike the icons in the footer
+                    // row. This image is the only thing inside the link, so its
+                    // alt text is the link's accessible name -- blank it and a
+                    // screen reader announces "link" with nothing after it.
+                    img { src: TITLE_ICON, alt: "denizhoroz, home", class: "navbar-logo" }
                 }
 
                 nav {
@@ -90,6 +157,9 @@ pub fn Navbar() -> Element {
                         to: Route::Home {},
                         class: if on_home { "nav-active" } else { "" },
                         aria_current: if on_home { "page" } else { "false" },
+                        // Same pairing as the brand mark above -- see go_home.
+                        onclick: go_home,
+                        onclick_only: on_home,
                         "home"
                     }
                     a { href: about_href, onclick: jump("aboutme"), "who am i?" }
