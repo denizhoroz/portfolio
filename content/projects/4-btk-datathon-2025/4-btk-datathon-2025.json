@@ -6,6 +6,6 @@
     "image_key": "btk-datathon-2025.jpg",
     "gitlink": "https://github.com/denizhoroz/btk-datathon-2025",
     "tech": ["Python", "Pandas", "Matplotlib", "XGBoost", "LightGBM", "Scikit-learn"],
-    "finish_date": "2025-09-28",
+    "finish_date": "2025-08-31",
     "markdown_key": "btk-datathon-2025.md"
 }

@@ -6,6 +6,6 @@
     "image_key": "teknofest-address-resolution-2025.png",
     "gitlink": "https://github.com/denizhoroz/address-resolution",
     "tech": ["Python", "Regex", "NLP", "BERT", "TF-IDF", "FAISS"],
-    "finish_date": "2025-08-17",
+    "finish_date": "2025-08-25",
     "markdown_key": "teknofest-address-resolution-2025.md"
 }

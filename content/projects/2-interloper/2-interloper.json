@@ -6,6 +6,6 @@
     "image_key": "interloper.png",
     "gitlink": "https://github.com/denizhoroz/interloper",
     "tech": ["Python", "Flask", "Langchain", "Javascript"],
-    "finish_date": "2025-06-14",
+    "finish_date": "2025-09-21",
     "markdown_key": "interloper.md"
 }
