@@ -49,20 +49,17 @@
 
     <!-- Theme, resolved before first paint. Must be inline and synchronous, and
          must NOT live in the Dioxus app: that only starts once the WASM boots,
-         so a dark-mode reader would get a full-screen flash of light on every
-         load. Stored choice wins, else the OS. try/catch because localStorage
-         throws outright in some privacy modes. -->
+         so a returning dark-mode reader would get a full-screen flash of light
+         on every load. Light is the default: only an explicit stored choice
+         turns the site dark, the OS preference is deliberately not consulted.
+         try/catch because localStorage throws outright in some privacy modes. -->
     <script>
       (() => {
+        let dark = false;
         try {
-          const saved = localStorage.getItem("theme");
-          const dark = saved
-            ? saved === "dark"
-            : matchMedia("(prefers-color-scheme: dark)").matches;
-          document.documentElement.dataset.theme = dark ? "dark" : "light";
-        } catch (_) {
-          document.documentElement.dataset.theme = "light";
-        }
+          dark = localStorage.getItem("theme") === "dark";
+        } catch (_) {}
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
       })();
     </script>
   </head>
