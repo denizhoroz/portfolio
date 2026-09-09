@@ -34,7 +34,7 @@ pub fn WorkPage(slug: String) -> Element {
                     "There is no project at this address. It may have been renamed, or the link may be out of date."
                 }
 
-                Link { class: "block-desc button", to: Route::MyWorksPage {}, "Back to all works" }
+                Link { class: "block-desc button", to: Route::WorksPage {}, "Back to all works" }
             }
         },
 

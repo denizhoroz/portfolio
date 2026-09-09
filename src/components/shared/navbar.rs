@@ -72,7 +72,8 @@ pub fn Navbar() -> Element {
                     // active_class also sets aria-current="page" for screen readers
                     Link { to: Route::Home {}, active_class: "nav-active", "home" }
                     a { href: about_href, onclick: jump("aboutme"), "who am i?" }
-                    Link { to: Route::MyWorksPage {}, active_class: "nav-active", "my works" }
+                    Link { to: Route::WorksPage {}, active_class: "nav-active", "works" }
+                    Link { to: Route::WorksPage {}, active_class: "nav-active", "articles" }
                     a { href: reach_href, onclick: jump("reachme"), "reach me" }
 
                     // Inside the nav, not a third child of .navbar-inner --

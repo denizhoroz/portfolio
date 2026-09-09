@@ -17,7 +17,7 @@ pub fn AboutMe() -> Element {
                 // Both of these were <h3>. They are prose, not headings.
                 p {
                     class: "block-desc",
-                    "Hello, I'm Deniz. I develop helpful apps to solve people's problems."
+                    "Hi, I'm Deniz. I build systems and develop helpful apps to solve people's problems."
                 }
                 p {
                     class: "block-desc",

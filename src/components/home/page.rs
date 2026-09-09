@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{AboutMe, Footer, Hero, MyWorks, ReachMe};
+use crate::{AboutMe, Footer, Hero, Works, ReachMe};
 
 /// Home page -- composition only; each section owns its own file.
 #[component]
@@ -15,7 +15,7 @@ pub fn Home() -> Element {
             class: "flex flex-col",
             Hero {}
             AboutMe {}
-            MyWorks {}
+            Works {}
             ReachMe {}
         }
 

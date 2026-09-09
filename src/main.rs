@@ -16,7 +16,7 @@ enum Route {
     Home {},
 
     #[route("/works")]
-    MyWorksPage {},
+    WorksPage {},
 
     #[route("/works/:slug")]
     WorkPage { slug: String }

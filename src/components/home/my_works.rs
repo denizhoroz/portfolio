@@ -6,7 +6,7 @@ use crate::{ProjectGrid, Route};
 const HOME_PROJECT_COUNT: usize = 3;
 
 #[component]
-pub fn MyWorks() -> Element {
+pub fn Works() -> Element {
     rsx! {
         div {
             id: "myworks",
@@ -16,7 +16,7 @@ pub fn MyWorks() -> Element {
             class: "page-block page-section",
             div {
                 class: "flex w-full flex-col items-center justify-center gap-5",
-                h2 { class: "block-title", "my works" }
+                h2 { class: "block-title", "latest works" }
 
                 ProjectGrid {
                     skeleton_count: HOME_PROJECT_COUNT,
@@ -24,7 +24,7 @@ pub fn MyWorks() -> Element {
                     empty: "Nothing here yet.",
                 }
 
-                Link { class: "block-desc button", to: Route::MyWorksPage {}, "see my other works" }
+                Link { class: "block-desc button", to: Route::WorksPage {}, "see my other works" }
             }
         }
     }

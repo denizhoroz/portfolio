@@ -1,17 +1,20 @@
 use dioxus::prelude::*;
 
-use crate::ProjectGrid;
+use crate::{ProjectGrid, Route, components::Footer};
 
 /// Placeholders while loading -- the expected count, not a promise.
 const SKELETON_COUNT: usize = 6;
 
 #[component]
-pub fn MyWorksPage() -> Element {
+pub fn WorksPage() -> Element {
     rsx! {
-        document::Title { "All works — denizhoroz" }
+        document::Title { "All works" }
 
         div {
             class: "page-block",
+            style: "padding-top: 20px; padding-bottom: 20px",
+
+            Link { class: "block-desc button", to: Route::Home {}, "go back" }
 
             h1 { class: "block-title m-2.5", "all my works" }
 
@@ -20,5 +23,10 @@ pub fn MyWorksPage() -> Element {
                 empty: "No projects here yet.",
             }
         }
+
+        div {
+            class: "pt-[clamp(4rem,12vw,10rem)]",
+            Footer {}
+        }        
     }
 }
