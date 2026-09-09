@@ -37,10 +37,12 @@ html {
     /* Reserve the scrollbar's width whether or not there is one to show.
 
        Without this, a page tall enough to scroll is ~15px narrower than one
-       that is not, and every centred thing on it -- the page title, the "go
-       back" button, the footer line -- sits ~7px left of where the same element
-       sits on a short page. /works scrolls and /articles does not, so the two
-       did not agree.
+       that is not, and every centred thing on it -- the page title, the footer
+       line -- sits ~7px left of where the same element sits on a short page.
+       /works scrolls and /articles does not, so the two did not agree.
+
+       The breadcrumb is not centred, but it moves too: the measure it starts
+       from is what narrows, so its left edge shifts by the same ~7px.
 
        Cheaper than the alternatives: `overflow-y: scroll` shows a dead
        scrollbar track on short pages, and centring against 100vw instead lets

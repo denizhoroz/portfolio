@@ -1,11 +1,16 @@
 use dioxus::prelude::*;
 
-use crate::{Route, SkeletonDetail, data::fetch_project, format_date};
+use crate::{Breadcrumb, Crumb, Route, SkeletonDetail, data::fetch_project, format_date};
 
 const GITHUB_ICON: Asset = asset!("/assets/icons/github.svg");
 
 #[component]
 pub fn WorkPage(slug: String) -> Element {
+    // Cloned before use_reactive! consumes the prop below. Used as the trail's
+    // last crumb when the fetch comes back empty: on a 404 the slug is the only
+    // name this page has.
+    let slug_label = slug.clone();
+
     // use_reactive! is load-bearing: use_resource captures its closure once, and
     // /works/a -> /works/b reuses this component with only the prop swapped, so
     // without it the future keeps fetching the slug it was first built with.
@@ -13,6 +18,19 @@ pub fn WorkPage(slug: String) -> Element {
         fetch_project(&slug).await
     }));
     let state = project.value();
+
+    // The trail's last crumb. Read in its own statement and owned rather than
+    // borrowed, so the guard drops here: the trail renders outside the `body`
+    // match below -- see the comment at the bottom of this function -- and so
+    // cannot be built inside one of its arms.
+    //
+    // Some(None) falls back to the slug. On a 404 there is no title to show,
+    // and the address is the only name the page has.
+    let current: Option<String> = match &*state.read() {
+        None => None,
+        Some(None) => Some(slug_label.clone()),
+        Some(Some(p)) => Some(p.title.clone()),
+    };
 
     // Three states, not two: Some(None) is a real 404, None is "still asking".
     // Collapsing them flashes "Project not found" on every page load.
@@ -123,12 +141,25 @@ pub fn WorkPage(slug: String) -> Element {
 
     rsx! {
         // Outside the match, in its own .page-block: the arms carry gap-6/gap-8,
-        // which would add to the 20px below, and a go back that only appeared
-        // once the fetch landed would push the whole page down on arrival.
+        // which would add to the 20px below, and a trail that only appeared once
+        // the fetch landed would push the whole page down on arrival.
+        //
+        // Only the last crumb waits on the fetch, and Crumb::pending holds its
+        // width while it does, so the title arriving changes that crumb and
+        // nothing else.
         div {
             class: "page-block",
 
-            Link { class: "block-desc button mb-[20px]", to: Route::WorksPage {}, "go back" }
+            Breadcrumb {
+                trail: vec![
+                    Crumb::link("home", Route::Home {}),
+                    Crumb::link("works", Route::WorksPage {}),
+                    match current {
+                        Some(title) => Crumb::current(title),
+                        None => Crumb::pending(),
+                    },
+                ],
+            }
         }
 
         {body}

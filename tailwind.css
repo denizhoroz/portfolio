@@ -479,4 +479,74 @@
   .nav-active {
     @apply font-semibold;
   }
+
+  /* The trail above every route but Home, in the slot the "go back" button
+     used to occupy. See the Breadcrumb component for why it replaced it.
+
+     The 20px below is here rather than at the four call sites: it was an
+     mb-[20px] utility repeated on every "go back", and the component owns its
+     own slot now. px, not mb-5, for the same reason the old one used px -- the
+     80% root renders 1.25rem as 16px, and this is fixed breathing room rather
+     than a step on the spacing scale. */
+  .breadcrumb {
+    @apply w-full mb-[20px];
+  }
+
+  /* Left-aligned deliberately, against the rest of the site. .page-block is
+     items-center + text-center, so text-left here is an override, not an
+     inherit: a path reads as a path when it starts at the left margin, and this
+     lines up with the project image and the prose below it rather than floating
+     over them.
+
+     flex-wrap so a long project title breaks to a second line on a phone. The
+     measure is what must not move; the trail is free to grow taller.
+
+     text-lg matches .project-date -- both are captions sitting near a
+     .block-subtitle, and they should not disagree about how small that is. */
+  .breadcrumb-list {
+    @apply flex flex-row flex-wrap items-center gap-x-2 gap-y-1
+           text-left text-lg;
+  }
+
+  .breadcrumb-item {
+    @apply flex flex-row items-center gap-x-2;
+  }
+
+  /* Dimmed with an alpha on --color-ink rather than --color-subtle. subtle is
+     not a lighter ink in this palette -- light mode has ink #342f1d against
+     subtle #303022, which is marginally *darker* -- so it would read as no
+     change at all. An alpha dims against whichever background the theme is
+     using, and works in both.
+
+     Decorative and aria-hidden, so the low contrast costs nothing: the list
+     structure is what carries the separation for a screen reader. select-none
+     so dragging across the trail copies the labels, not the slashes. */
+  .breadcrumb-sep {
+    @apply select-none text-ink/45;
+  }
+
+  /* Underline on hover, matching `#navbar a:hover` exactly. The site already
+     teaches that underline means "this is hovering"; a second hover idiom for
+     the same gesture two rems below the navbar would be noise. focus-visible
+     gets it too, on top of the global ring in main.css. */
+  .breadcrumb-link {
+    @apply text-ink underline-offset-4 transition-colors duration-200
+           hover:underline hover:decoration-2 focus-visible:underline;
+  }
+
+  /* The page the reader is on. Dimmed rather than bolded: .nav-active already
+     spends weight on "you are here" in the navbar, and the h1 immediately below
+     says the same thing at 2.5rem. At 70% of ink this still clears 4.5:1 in
+     both themes -- ink measures 12.50 on light and 13.21 on dark. */
+  .breadcrumb-current {
+    @apply text-ink/70;
+  }
+
+  /* Carries .skeleton alongside it for the fill and the pulse; this only sets
+     the size. ch so the placeholder is about the width of a title rather than
+     an arbitrary bar, and 1em tall so it sits on the line the text will take.
+     The negative align keeps it on the text baseline instead of riding high. */
+  .breadcrumb-pending {
+    @apply inline-block h-[1em] w-[9ch] align-[-0.15em];
+  }
 }

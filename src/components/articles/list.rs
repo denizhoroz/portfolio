@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::{ArticleList, Route};
+use crate::{ArticleList, Breadcrumb, Crumb, Route};
 
 /// Placeholders while loading -- the expected count, not a promise.
 const SKELETON_COUNT: usize = 4;
@@ -11,7 +11,12 @@ pub fn ArticlesPage() -> Element {
         div {
             class: "page-block",
 
-            Link { class: "block-desc button mb-[20px]", to: Route::Home {}, "go back" }
+            Breadcrumb {
+                trail: vec![
+                    Crumb::link("home", Route::Home {}),
+                    Crumb::current("articles"),
+                ],
+            }
 
             h1 { class: "block-title m-2.5", "my articles" }
 

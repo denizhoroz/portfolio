@@ -4,6 +4,9 @@
 mod navbar;
 pub use navbar::*;
 
+mod breadcrumb;
+pub use breadcrumb::*;
+
 mod footer;
 pub use footer::*;
 
