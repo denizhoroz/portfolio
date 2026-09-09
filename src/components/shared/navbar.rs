@@ -35,6 +35,16 @@ pub fn Navbar() -> Element {
     let about_href = if on_home { "#aboutme" } else { "/#aboutme" };
     let reach_href = if on_home { "#reachme" } else { "/#reachme" };
 
+    // Breathing room at the top and bottom of every route, applied here rather
+    // than in each page: this is the one place every route passes through, so a
+    // page added later gets it without remembering to.
+    //
+    // Home is the exception. Its children are full-height .page-section blocks
+    // measured against the viewport, so padding around them makes the last
+    // section overflow by exactly the padding and puts a scrollbar on a page
+    // designed to have none.
+    let outlet_class = if on_home { "" } else { "page-pad" };
+
     // The href stays a real URL for the status bar and open-in-new-tab, but the
     // plain click is intercepted: letting the browser follow it re-downloads the
     // WASM binary AND looks for the target before Dioxus has rendered it.
@@ -82,6 +92,9 @@ pub fn Navbar() -> Element {
                 }
             }
         }
-        Outlet::<Route> {}
+        div {
+            class: outlet_class,
+            Outlet::<Route> {}
+        }
     }
 }

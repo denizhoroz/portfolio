@@ -8,11 +8,8 @@ const SKELETON_COUNT: usize = 6;
 #[component]
 pub fn WorksPage() -> Element {
     rsx! {
-        document::Title { "All works" }
-
         div {
             class: "page-block",
-            style: "padding-top: 20px; padding-bottom: 20px",
 
             Link { class: "block-desc button", to: Route::Home {}, "go back" }
 

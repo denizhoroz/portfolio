@@ -23,6 +23,30 @@
          <title>, so any content here yields it twice. -->
     <title></title>
 
+    <!-- Here rather than a document::Link for the same reason as the meta tags:
+         these must be in the served HTML. A stylesheet Dioxus inserts after the
+         WASM boots arrives too late to style the first paint, so the page would
+         render in the fallback face and reflow once the real one lands.
+
+         JetBrains Mono weights 400-700 cover the chrome: body text,
+         .nav-active's font-semibold (600) and .navbar-title's font-bold (700).
+
+         Fragment Mono is the project write-up face (.markdown-body) and ships
+         one weight, 400, plus its italic -- there is no bold cut, so the
+         markdown headings and any **strong** in a body are synthesised by the
+         browser. That is the trade for the face; do not "fix" it by adding a
+         weight axis the family does not have.
+
+         One request, two families: a second css2 URL is a second round trip for
+         the same connection. display=swap shows the fallback immediately
+         instead of blocking text on the download. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400..700&family=Fragment+Mono:ital@0;1&display=swap"
+    />
+
     <!-- Theme, resolved before first paint. Must be inline and synchronous, and
          must NOT live in the Dioxus app: that only starts once the WASM boots,
          so a dark-mode reader would get a full-screen flash of light on every

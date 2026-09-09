@@ -15,6 +15,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
+use pulldown_cmark::{Options, Parser, html};
 use serde::Deserialize;
 
 /// One `content/projects/<id>-<slug>/<id>-<slug>.json` file.
@@ -37,6 +38,12 @@ struct ProjectFile {
     /// filled in after the file is read. `None` when the image is missing.
     #[serde(skip)]
     image_path: Option<String>,
+
+    /// `markdown_key` rendered to HTML, filled in after the file is read.
+    /// Empty when the file is missing or has no content -- the detail page
+    /// renders nothing rather than an empty box.
+    #[serde(skip)]
+    markdown_html: String,
 }
 
 fn main() {
@@ -108,14 +115,22 @@ fn read_projects(dir: &Path) -> Vec<ProjectFile> {
             );
         }
 
-        // Not fatal: the markdown body is not rendered yet, and a missing file
-        // should not stop a build.
-        if !path.join(&project.markdown_key).exists() {
+        // The body is rendered here rather than in the app: pulldown-cmark
+        // would otherwise ship in the wasm bundle to parse text that never
+        // changes after a build. A missing file is not fatal -- an empty body
+        // renders as no body at all.
+        let markdown_path = path.join(&project.markdown_key);
+        project.markdown_html = if markdown_path.exists() {
+            let md = fs::read_to_string(&markdown_path)
+                .unwrap_or_else(|e| panic!("failed to read {}: {e}", markdown_path.display()));
+            render_markdown(&md)
+        } else {
             println!(
                 "cargo:warning=content/projects/{folder}/{} is missing",
                 project.markdown_key
             );
-        }
+            String::new()
+        };
 
         // Also not fatal: the card and the detail page both keep their image
         // box -- it carries the aspect-ratio that reserves the space -- and
@@ -134,6 +149,25 @@ fn read_projects(dir: &Path) -> Vec<ProjectFile> {
     }
 
     projects
+}
+
+/// CommonMark plus the table, footnote and strikethrough extensions -- the
+/// parts of "GitHub markdown" a project write-up actually reaches for.
+///
+/// Raw HTML in a source file is passed through as written. The content is the
+/// author's own and is compiled in from the repository, so there is no
+/// untrusted input here; the output goes to `dangerous_inner_html`.
+fn render_markdown(md: &str) -> String {
+    let mut options = Options::empty();
+    options.insert(Options::ENABLE_TABLES);
+    options.insert(Options::ENABLE_FOOTNOTES);
+    options.insert(Options::ENABLE_STRIKETHROUGH);
+    options.insert(Options::ENABLE_TASKLISTS);
+    options.insert(Options::ENABLE_SMART_PUNCTUATION);
+
+    let mut out = String::new();
+    html::push_html(&mut out, Parser::new_ext(md, options));
+    out
 }
 
 /// Ids order the grid and slugs are the URL, so a duplicate of either silently
@@ -190,7 +224,7 @@ fn render(projects: &[ProjectFile]) -> String {
             gitlink: {gitlink:?}.to_string(),
             tech: vec![{tech}],
             finish_date: {finish_date:?}.to_string(),
-            markdown_key: {markdown_key:?}.to_string(),
+            markdown_html: {markdown_html:?}.to_string(),
         }},\n",
             id = p.id,
             slug = p.slug,
@@ -200,7 +234,7 @@ fn render(projects: &[ProjectFile]) -> String {
             gitlink = p.gitlink,
             tech = tech,
             finish_date = p.finish_date,
-            markdown_key = p.markdown_key,
+            markdown_html = p.markdown_html,
         ));
     }
 

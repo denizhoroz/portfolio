@@ -10,6 +10,7 @@ edition = "2021"
 dioxus = { version = "0.7.1", features = ["router", "web"] }
 
 [build-dependencies]
+pulldown-cmark = { version = "0.13.4", default-features = false, features = ["html"] }
 # Build-time only: content/*.json is parsed here and emitted as Rust, so serde
 # never reaches the wasm bundle.
 serde = { version = "1", features = ["derive"] }

@@ -8,14 +8,7 @@ use crate::{ProjectBox, Route, SkeletonGrid, data::fetch_projects};
 /// there are none, so everything else -- the resource, the loading state, the
 /// links, the keys -- lives here once.
 #[component]
-pub fn ProjectGrid(
-    /// Placeholders to show while loading; the expected count, not a promise.
-    skeleton_count: usize,
-    /// Cap on how many cards to render. `None` renders all of them.
-    limit: Option<usize>,
-    /// Shown when the source returns nothing.
-    empty: String,
-) -> Element {
+pub fn ProjectGrid(skeleton_count: usize, limit: Option<usize>, empty: String,) -> Element {
     let projects = use_resource(|| async move { fetch_projects().await });
     let state = projects.value();
 

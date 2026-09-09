@@ -4,6 +4,35 @@ use crate::{Route, SkeletonDetail, data::fetch_project};
 
 const GITHUB_ICON: Asset = asset!("/assets/icons/github.svg");
 
+const MONTHS: [&str; 12] = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+];
+
+/// `2025-06-14` -> `14 June 2025`.
+///
+/// The stored form is ISO because it sorts and cannot be misread as US order;
+/// this is the display form. Anything that does not parse is shown as written
+/// rather than dropped -- a visible odd date is a bug report, a missing one is
+/// silence.
+fn format_date(iso: &str) -> String {
+    let mut parts = iso.split('-');
+    let (Some(y), Some(m), Some(d), None) =
+        (parts.next(), parts.next(), parts.next(), parts.next())
+    else {
+        return iso.to_string();
+    };
+
+    let (Ok(month), Ok(day)) = (m.parse::<usize>(), d.parse::<u32>()) else {
+        return iso.to_string();
+    };
+
+    match MONTHS.get(month.wrapping_sub(1)) {
+        Some(name) => format!("{day} {name} {y}"),
+        None => iso.to_string(),
+    }
+}
+
 #[component]
 pub fn WorkPage(slug: String) -> Element {
     // use_reactive! is load-bearing: use_resource captures its closure once, and
@@ -22,8 +51,6 @@ pub fn WorkPage(slug: String) -> Element {
         None => rsx! { SkeletonDetail {} },
 
         Some(None) => rsx! {
-            document::Title { "Project not found — denizhoroz" }
-
             div {
                 class: "page-block gap-6",
 
@@ -39,9 +66,8 @@ pub fn WorkPage(slug: String) -> Element {
         },
 
         Some(Some(p)) => {
-            // image_src is None only when the project folder has no image file.
-            // Keep the box -- it carries the aspect-ratio that reserves space --
-            // and render no <img>, rather than a broken-image icon.
+
+
             let image = match &p.image_src {
                 Some(src) => rsx! {
                     img {
@@ -58,17 +84,38 @@ pub fn WorkPage(slug: String) -> Element {
                 },
             };
 
+            // Rendered by build.rs, never by a user: see `Project::markdown_html`.
+            let markdown = (!p.markdown_html.is_empty()).then(|| {
+                rsx! {
+                    hr { class: "section-rule" }
+
+                    div {
+                        class: "markdown-body",
+                        dangerous_inner_html: "{p.markdown_html}"
+                    }
+                }
+            });
+
             rsx! {
-                document::Title { "{p.title} — denizhoroz" }
 
                 div {
                     class: "page-block gap-8",
 
                     h1 { class: "block-subtitle", "{p.title}" }
 
+                    // <time> so the machine-readable ISO value survives even
+                    // though the text beside it is the human form.
+                    time {
+                        class: "project-date",
+                        datetime: "{p.finish_date}",
+                        "{format_date(&p.finish_date)}"
+                    }
+
                     {image}
 
-                    p { class: "block-desc zen-content", "{p.description}" }
+                    // text-center beats .block-desc's text-justify: utilities
+                    // are layered after components.
+                    p { class: "block-desc zen-content text-center", "{p.description}" }
 
                     div {
                         class: "tech-list",
@@ -81,8 +128,10 @@ pub fn WorkPage(slug: String) -> Element {
                         class: "block-desc button",
                         href: "{p.gitlink}",
                         img { src: GITHUB_ICON, alt: "", class: "social-icon" }
-                        "Project GitHub Link"
+                        "GitHub Link"
                     }
+
+                    {markdown}
                 }
             }
         }

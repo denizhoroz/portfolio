@@ -12,5 +12,8 @@ pub use about_me::*;
 mod my_works;
 pub use my_works::*;
 
+mod my_articles;
+pub use my_articles::*;
+
 mod reach_me;
 pub use reach_me::*;

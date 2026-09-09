@@ -28,16 +28,27 @@
   --color-surface: #f7ecd0;
   --color-cream: #e8dab4;
 
-  --font-display: "Jetbrains Mono", Tahoma, Geneva, Verdana, sans-serif;
+  /* Loaded from index.html. The fallbacks are monospace so a failed webfont
+     keeps the same character of the design; ui-monospace picks up SF Mono /
+     Cascadia / DejaVu Sans Mono per platform without naming each one. */
+  --font-display: "JetBrains Mono", ui-monospace, "Cascadia Mono", Menlo,
+                  Consolas, monospace;
+
+  /* Project write-ups only -- see .markdown-body. A second face for long-form
+     content, so a body reads as a document rather than as more chrome. Same
+     monospace fallbacks as above: whichever face fails to load, the metrics
+     stay in the same family of shapes. */
+  --font-content: "Fragment Mono", ui-monospace, "Cascadia Mono", Menlo,
+                  Consolas, monospace;
 
   /* The one width every region obeys -- prose, card grid, project image, navbar
      contents. --container-* is the namespace Tailwind v4 builds max-w-* from,
      so this emits `max-w-measure`. */
   --container-measure: 64rem;
 
-  --text-display: clamp(2.5rem, 9vw, 5rem);
-  --text-section: clamp(1.75rem, 5vw, 2.5rem);
-  --text-lead: clamp(1.05rem, 2.2vw, 1.5rem);
+  --text-display: clamp(3.00rem, 9vw, 5rem);
+  --text-section: clamp(2.00rem, 5vw, 2.5rem);
+  --text-lead: clamp(1.25rem, 2.2vw, 1.5rem);
 }
 
 /* Light mode's counterpart to the dark block below. Not a @theme token --
@@ -82,6 +93,16 @@
   .page-block {
     @apply m-auto flex w-full max-w-measure flex-col items-center justify-center
            px-3 text-center sm:px-5;
+  }
+
+  /* Applied by the Navbar layout to every route but Home -- see the comment
+     there for why Home is excluded.
+
+     py-[20px] in px, not py-5: the 80% root would render 1.25rem as 16px, and
+     this is a fixed 20px of breathing room rather than a value on the type
+     scale. Vertical only, so the footer's rule still reaches both edges. */
+  .page-pad {
+    @apply py-[20px];
   }
 
   /* Home's four sections only; /works must keep its natural height. dvh so
@@ -166,12 +187,128 @@
     @apply w-10;
   }
 
+  /* Sits under the title on a project page. text-lead would compete with the
+     title; this is a caption, so it stays small and --color-subtle. */
+  .project-date {
+    @apply text-lg text-subtle italic;
+  }
+
+  /* The footer's rule spans the viewport because the footer is full-bleed. This
+     one stops at the measure instead, so it lines up with the project image and
+     the prose rather than running past them.
+
+     border-t rather than a height: the base layer zeroes hr's height and draws
+     it with border-top-width, so setting a background would paint nothing. */
+  .section-rule {
+    @apply w-full border-t border-edge;
+  }
+
+  /* Prose written in markdown, rendered to HTML at build time. Everything here
+     is restoring what the Tailwind base layer strips -- heading sizes, list
+     markers, the spacing between blocks -- because none of those tags carry a
+     class the rsx could reach. Scoped to descendants of .markdown-body so the
+     resets stay off the rest of the site.
+
+     text-left, not .block-desc's justify: a write-up mixes short lines, code
+     and lists, and justification opens rivers of whitespace between them. */
+  /* text-lg, not the inherited root size: a write-up is the one place on the
+     site read a paragraph at a time rather than glanced at, and Fragment Mono
+     sets narrower than the chrome face at the same nominal size. The heading
+     steps below move with it so the hierarchy keeps its spacing. */
+  .markdown-body {
+    @apply w-full font-content text-lg text-left leading-[1.7];
+  }
+
+  .markdown-body > * + * {
+    @apply mt-4;
+  }
+
+  /* No font-bold: Fragment Mono ships one weight, so bold here would be the
+     browser smearing the 400 outlines rather than a designed cut. Size, colour
+     and the space above carry the hierarchy instead. */
+  .markdown-body h1,
+  .markdown-body h2,
+  .markdown-body h3,
+  .markdown-body h4,
+  .markdown-body h5,
+  .markdown-body h6 {
+    @apply mt-8 text-strong;
+  }
+
+  .markdown-body h1 { @apply text-3xl; }
+  .markdown-body h2 { @apply text-2xl; }
+  .markdown-body h3 { @apply text-xl; }
+
+  /* Markers sit outside the text column, so the list body still lines up with
+     the paragraphs above it. */
+  .markdown-body ul,
+  .markdown-body ol {
+    @apply ml-6 flex flex-col gap-1;
+  }
+
+  .markdown-body ul { @apply list-outside list-disc; }
+  .markdown-body ol { @apply list-outside list-decimal; }
+
+  /* Nested lists are a continuation of their parent item, not a new block. */
+  .markdown-body li > ul,
+  .markdown-body li > ol {
+    @apply mt-1;
+  }
+
+  .markdown-body a {
+    @apply text-edge underline underline-offset-4 hover:decoration-2;
+  }
+
+  /* font-content again rather than inherited: the base layer sets an explicit
+     font-family on code/kbd/samp/pre, and an explicit value on the element
+     itself is not something inheritance can override. */
+  .markdown-body code {
+    @apply rounded bg-surface px-1.5 py-0.5 font-content text-[0.9em];
+  }
+
+  /* Long code lines scroll inside the block; the page itself must never scroll
+     sideways. The reset on the inner code undoes the inline pill above. */
+  .markdown-body pre {
+    @apply overflow-x-auto rounded-lg border border-edge bg-surface p-4
+           font-content;
+  }
+
+  .markdown-body pre code {
+    @apply bg-transparent p-0 text-[0.9em];
+  }
+
+  .markdown-body blockquote {
+    @apply border-l-4 border-edge pl-4 text-subtle;
+  }
+
+  .markdown-body img {
+    @apply rounded-lg border border-edge;
+  }
+
+  .markdown-body hr {
+    @apply my-8 border-t border-edge;
+  }
+
+  /* Wrapped in its own scroller for the same reason as pre. */
+  .markdown-body table {
+    @apply block w-full overflow-x-auto;
+  }
+
+  .markdown-body th,
+  .markdown-body td {
+    @apply border border-edge px-3 py-2 text-left;
+  }
+
+  .markdown-body th {
+    @apply bg-surface font-bold;
+  }
+
   .tech-list {
     @apply flex flex-wrap justify-center gap-1;
   }
 
   .tech-tag {
-    @apply rounded-full border border-edge px-2.5 py-1 text-[0.8125rem];
+    @apply rounded-full border border-edge px-2.5 py-1 text-sm;
   }
 
   /* Hidden below sm: the four links plus the 44x44 theme button fill the bar
@@ -216,7 +353,7 @@
      sm:/lg: gaps are comfort, not safety, so those may scale. */
   #navbar {
     @apply flex flex-row flex-nowrap items-center justify-center
-           gap-[8px] text-xs sm:gap-3 sm:text-sm lg:gap-6 lg:text-base;
+           gap-[8px] text-sm sm:gap-3 sm:text-sm lg:gap-6 lg:text-base;
   }
 
   /* min-h-[44px] in px for the same reason as the gap above: rem would render

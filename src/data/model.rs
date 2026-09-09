@@ -27,12 +27,15 @@ pub struct Project {
     /// components keep the image box and render no `<img>`.
     pub image_src: Option<String>,
 
-    /// ISO `YYYY-MM-DD`. Carried from the content file; not rendered yet.
-    #[allow(dead_code)]
+    /// ISO `YYYY-MM-DD`, as written in the content file. The detail page
+    /// formats it for display; the stored form stays sortable and unambiguous.
     pub finish_date: String,
 
-    /// Filename of the project's markdown body, inside its content folder.
-    /// Carried from the content file; not rendered yet.
-    #[allow(dead_code)]
-    pub markdown_key: String,
+    /// The project's markdown body, already rendered to HTML.
+    ///
+    /// Rendered by `build.rs` rather than at runtime: the source never changes
+    /// after a build, so parsing it in the browser would ship a markdown parser
+    /// in the wasm bundle to produce a constant. Empty means the project has no
+    /// body, and the detail page renders nothing.
+    pub markdown_html: String,
 }
