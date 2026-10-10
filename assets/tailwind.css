@@ -267,6 +267,9 @@
   .inline {
     display: inline;
   }
+  .table {
+    display: table;
+  }
   .aspect-\[16\/10\] {
     aspect-ratio: 16/10;
   }

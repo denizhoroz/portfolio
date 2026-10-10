@@ -1,0 +1,11 @@
+{
+    "id": 7,
+    "slug": "modeloid",
+    "title": "Modeloid - A Local Computer Vision Workbench",
+    "description": "Modeloid is a local computer vision workbench that helps you from preparing datasets to training models and reviewing them.",
+    "image_key": "modeloid.png",
+    "gitlink": "https://github.com/denizhoroz/modeloid",
+    "tech": ["Rust", "Dioxus", "Python", "Ultralytics", "Albumentations"],
+    "finish_date": "2026-10-10",
+    "markdown_key": "modeloid.md"
+}
