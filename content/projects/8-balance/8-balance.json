@@ -1,0 +1,11 @@
+{
+    "id": 8,
+    "slug": "balance",
+    "title": "Balance - Personal Finance",
+    "description": "A small Windows desktop app for tracking incomes, expenses and assets.",
+    "image_key": "balance.png",
+    "gitlink": "https://github.com/denizhoroz/balance",
+    "tech": ["Rust", "GPUI Kit"],
+    "finish_date": "2026-11-14",
+    "markdown_key": "balance.md"
+}
